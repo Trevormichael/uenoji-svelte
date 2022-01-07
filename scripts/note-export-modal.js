@@ -202,8 +202,8 @@ async function searchTerm(t) {
         var ts = grouped[key]
         var first = ts.shift()
         if (ts.length > 0) {
-            var combinedDef = ts.map(v => v.defString).join('\n')
-            first.defString += "\n" + combinedDef
+            var combinedDef = ts.map(v => v.defString).join('<br>')
+            first.defString += "<br>" + combinedDef
         }
         return first
     })
@@ -218,6 +218,7 @@ async function searchTerm(t) {
         }
     }
     var entryMappings = await db.entryMappings.toArray()
+    finalTermList.forEach(t => t.defString = t.defString.replace(/\n$/, ''))
     finalTermList.map(async(t) => {
         var mapping = entryMappings.find(m => {
             let dictNameExp = new RegExp(m.dictName, 'i')
@@ -247,7 +248,7 @@ async function displayResults(res) {
         var span = clone.querySelectorAll("span");
         span[0].textContent = t.term
         span[1].textContent = t.reading
-        span[2].textContent = t.defString
+        span[2].innerHTML = t.defString
         span[3].textContent = t.dictName
         var hasMatchingMapping = availableMappings.some(m => {
             let dictNameExp = new RegExp(m.dictName, 'i')
