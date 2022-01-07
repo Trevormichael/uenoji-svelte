@@ -6,6 +6,7 @@ let searchTermHistory = document.getElementById('search-term-history')
 let clearAllChanges = document.getElementById('clear-all-changes')
 
 var pendingCardChanges = {}
+var noteId = -1
 var searchHistory = {}
 
 function showNoteExportModal() {
@@ -15,6 +16,12 @@ function showNoteExportModal() {
     })
 }
 
+function setNoteId(id) {
+    if (id != noteId)
+        resetSearchCache()
+    noteId = id
+}
+
 function hideNoteExportModal() {
     cardModal.hide()
     Mousetrap.unbind('command+f')
@@ -22,11 +29,14 @@ function hideNoteExportModal() {
 
 function resetNoteModal() {
     pendingCardChanges = {}
-    searchHistory = {}
     searchTermField.value = ""
-    searchTermHistory.innerHTML = ""
     noteFields.parentNode.scrollTop = 0
     searchResults.parentNode.scrollTop = 0
+}
+
+function resetSearchCache() {
+    searchHistory = {}
+    searchTermHistory.innerHTML = ""
 }
 
 clearAllChanges.addEventListener('click', event => {

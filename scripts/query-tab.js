@@ -13,7 +13,7 @@ queryForm.addEventListener("submit", async(event) => {
 });
 
 cardModal._element.addEventListener('hidden.bs.modal', () => {
-    resetNoteModal
+    resetNoteModal()
 })
 
 async function updateNoteQueryResults() {
@@ -87,6 +87,7 @@ function loadNoteInfoModal(noteId) {
     invoke("notesInfo", { notes: [noteId] }).then(cardRes => {
         if (cardRes.result != null) {
             showNoteExportModal()
+            setNoteId(noteId)
             setCardData(cardRes.result[0])
             updateCardPreview(getCardDataWithPendingChanges())
             searchCardField('Vocab')
