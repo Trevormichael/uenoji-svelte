@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline';
+    connect-src https://api-free.deepl.com http://127.0.0.1:8765; 
+    script-src 'self' 'unsafe-inline' 'unsafe-eval'; 
+    style-src 'self' 'unsafe-inline'; 
+    img-src 'self' data:">
+    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; 
+     connect-src https://api-free.deepl.com http://127.0.0.1:8765;
+     script-src 'self' 'unsafe-inline' 'unsafe-eval';
+     style-src 'self' 'unsafe-inline'; 
+     img-src 'self' data:">
+    <title>Uenoji</title>
+    <link rel="stylesheet" href="../style/bootstrap.min.css">
+    <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.css">
+    <link rel="stylesheet" href="../style/main.css">
+</head>
+
+<body>
+    <div class="container-fluid p-3 nav" id="nav">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link active" tab-id="anki-config">Anki</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" tab-id="dictionaries">Dictionaries</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" tab-id="configuration">Configuration</a>
+            </li>
+        </ul>
+    </div>
+
+    <div id="anki-config" class="container-fluid p-3 tab-content">
+
+        <h6>AnkiConnect <span id="anki-connect-badge" class="badge bg-success">Connected</span></h6>
+
+        <div class="row">
+            <div class="col-6">
+                <form id="query-form">
+                    <input id="anki-query" autofocus class="form-control" type="text" placeholder="Query" aria-label="Query">
+                </form>
+            </div>
+            <div class="col-3">
+                <button id="execute-query" form="query-form" type="submit" class="btn btn-primary">Execute</button>
+            </div>
+        </div>
+        <div class="row pt-2">
+            <div class="col-6">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="hidePrevExports">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">Hide previously exported notes</label>
+                </div>
+            </div>
+        </div>
+        <div class="row pt-2">
+            <div class="col-6">
+                <div class="panel px-2">
+                    <p id="res-count">0 results found.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row pt-2">
+            <div class="col-12">
+                <ul id="query-results" class="list-group">
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <div id="dictionaries" class="container-fluid p-3 tab-content" style="display: none;">
+        <h2>Dictionaries</h2>
+        <div class="row">
+            <h6>Add Dictionary</h6>
+            <div class="col-6">
+                <div class="mb-3">
+                    <input class="form-control" type="file" id="formFile" accept=".zip">
+                </div>
+            </div>
+            <div class="col-3">
+                <button id="save-dict" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+        <div class="row pt-2">
+            <div class="col-6">
+                <ul id="dict-list" class="list-group custom-list">
+                </ul>
+            </div>
+            <div class="col-6 panel p-3" id="dict-config" style="display: none;">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="group-terms-by-reading">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">Group terms by reading</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="configuration" class="container-fluid p-3 tab-content" style="display: none;">
+        <h2>Field Mapping</h2>
+        <div class="row">
+            <div class="col-6">
+                <button id="new-mapping" class="btn btn-primary">New Field Mapping</button>
+                <button id="delete-mappings" class="btn btn-danger">Delete All</button>
+            </div>
+        </div>
+        <div class="row pt-2">
+            <div class="col-12">
+                <ul id="mapping-list" class="list-group">
+                </ul>
+            </div>
+        </div>
+        <br>
+        <h2>Dictionary Entry Mapping</h2>
+        <div class="row">
+            <div class="col-6">
+                <button id="new-entry-mapping" class="btn btn-primary">New Entry Mapping</button>
+                <button id="delete-entry-mappings" class="btn btn-danger">Delete All</button>
+            </div>
+        </div>
+        <div class="row pt-2">
+            <div class="col-12">
+                <ul id="entry-mapping-list" class="list-group">
+                </ul>
+            </div>
+        </div>
+        <br>
+        <h2>Filtering</h2>
+        <div class="row">
+            <div class="col-6">
+                <button id="new-filter" class="btn btn-primary">New Field Filter</button>
+                <button id="delete-filters" class="btn btn-danger">Delete All</button>
+            </div>
+        </div>
+        <div class="row pt-2">
+            <div class="col-12">
+                <ul id="filter-list" class="list-group">
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <template id="dictionary-template">
+        <li class="dictionary-item">
+            <div class="flex-row d-flex">
+                <div class="flex-grow-1 d-flex">
+                    <span class="dict-name flex-grow-1">Main Term</span>
+                </div>
+                <div class="d-flex flex-column">
+                    <button class="btn btn-transparent float-end dict-sort-up m-2"><i class="fa-solid fa-sort-up"></i>
+                    </button>
+                    <button class="btn btn-transparent float-end dict-sort-down m-2"><i class="fa-solid fa-sort-down"></i>
+                    </button>
+                </div>
+            </div>
+        </li>
+    </template>
+
+    <!-- Modal -->
+    <div class="modal fade" id="card-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-large">
+            <div class="modal-content modal-custom container-fluid">
+                <div class="modal-body d-flex flex-column">
+                    <form id="dict-search-form" class="mt-2">
+                        <input id="dict-search-term" class="form-control" type="text" placeholder="Search..." aria-label="Search">
+                    </form>
+                    <ul class="nav nav-pills mt-2" id="search-term-history">
+                    </ul>
+                    <div class="d-flex flex-grow-1 pt-2 min-height-0">
+                        <div class="flex-even scrollable me-2">
+                            <ul id="search-results" class="list-group custom-list">
+                            </ul>
+                        </div>
+                        <div id="card-info" class="panel flex-even scrollable ms-2 p-3">
+                            <ul id="note-fields" class="list-group custom-list">
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="d-flex py-3">
+                        <button id="clear-all-changes" type="button" class="btn btn-danger">Clear all changes</button>
+                        <div class="d-flex flex-grow-1 justify-content-end">
+                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
+                            <button id="export-changes" type="button" class="btn btn-primary">Export changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <template id="note-info-template">
+        <li class="note-list-item">
+            <div class="row">
+                <span class="field-label">Label</span>
+                <br>
+                <span class="field-value">Value</span>
+            </div>
+        </li>
+    </template>
+
+    <template id="term-template">
+        <li class="term-list-item">
+            <div class="row align-items-end">
+                <div class="col-10 align-baseline">
+                    <span class="align-baseline main-term">Main Term</span>
+                    <span class="align-baseline reading">Secondary Term</span>
+                    <br>
+                    <span class="align-baseline definitions">Definitions</span>
+                    <br>
+                    <span class="align-baseline dictionary-name">Dictionary Name</span>
+                </div>
+                <div class="col-2">
+                    <button class="btn btn-primary float-end export-def m-2"><i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </li>
+    </template>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="mapping-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-large">
+            <div class="modal-content modal-custom container-fluid">
+                <div class="modal-body d-flex flex-column">
+                    <h3 class="pt-2">New Field Mapping</h3>
+                    <form id="mapping-form">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-6">
+                                    <input class="form-control" type="text" id="note-type" placeholder="Note Type" aria-label="Note Type"></input>
+                                </div>
+                                <div class="col-6">
+                                    <input class="form-control" type="text" id="dict-name" placeholder="Dictionary" aria-label="Note Type"></input>
+                                </div>
+                            </div>
+                            <div class="row pt-2">
+                                <div class="col-12">
+                                    <textarea class="form-control" type="text" id="mapping-script" placeholder="Script.." rows="12"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button id="save-mappings" form="mapping-form" type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="filter-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-large">
+            <div class="modal-content modal-custom container-fluid">
+                <div class="modal-body d-flex flex-column">
+                    <h3 class="pt-2">New Field Filter</h3>
+                    <form id="filter-form">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-12">
+                                    <input class="form-control" type="text" id="filter-note-type" placeholder="Note Type" aria-label="Note Type"></input>
+                                </div>
+                            </div>
+                            <div class="row pt-2">
+                                <div class="col-12">
+                                    <textarea class="form-control" type="text" id="filter-excludes" placeholder="Excluded Fields..." rows="2"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button form="filter-form" type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="entry-mapping-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-large">
+            <div class="modal-content modal-custom container-fluid">
+                <div class="modal-body d-flex flex-column">
+                    <h3 class="pt-2">New Entry Mapping</h3>
+                    <form id="entry-mapping-form">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-12">
+                                    <input class="form-control" type="text" id="mapping-dict-name" placeholder="Dictionary Name" aria-label="Dictionary Name"></input>
+                                </div>
+                            </div>
+                            <div class="row pt-2">
+                                <div class="col-12">
+                                    <textarea class="form-control" type="text" id="entry-mapping-script" placeholder="Script..." rows="12"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button form="entry-mapping-form" type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../lib/bootstrap.bundle.min.js"></script>
+    <script src="../lib/jszip.min.js"></script>
+    <script src="../lib/dexie.min.js"></script>
+    <script src="../lib/mousetrap.min.js"></script>
+    <script src="../scripts/common.js"></script>
+    <script src="../scripts/anki-connect.js"></script>
+    <script src="../scripts/deepl.js"></script>
+    <script src="../scripts/data.js"></script>
+    <script src="../scripts/binding.js"></script>
+    <script src="../scripts/query-tab.js"></script>
+    <script src="../scripts/dictionaries-tab.js"></script>
+    <script src="../scripts/config-tab.js"></script>
+    <script src="../scripts/note-export-modal.js"></script>
+    <script src="../scripts/new-filter-modal.js"></script>
+    <script src="../scripts/new-mapping-modal.js"></script>
+    <script src="../scripts/new-entry-mapping-modal.js"></script>
+    <script src="../scripts/nav.js"></script>
+    <script>
+        Mousetrap.bind('command+e', () => {
+            updateNoteQueryResults()
+        })
+    </script>
+</body>
+
+</html>
