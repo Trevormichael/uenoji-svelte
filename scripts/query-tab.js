@@ -12,13 +12,16 @@ queryForm.addEventListener("submit", async(event) => {
     updateNoteQueryResults();
 });
 
-cardModal.addEventListener('hidden.bs.modal', () => {
+cardModal._element.addEventListener('hidden.bs.modal', () => {
     resetNoteModal
 })
 
 async function updateNoteQueryResults() {
     var hidePrevExports = hidePrevExportToggle.checked;
     var query = queryText.value;
+    if (query.length == 0) {
+        return
+    }
     db.prefs.put({ key: 'latestQuery', value: query })
     res = await invoke("findNotes", { query: query })
     if (res.result != null) {
