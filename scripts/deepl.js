@@ -8,6 +8,11 @@ async function deeplTranslate(text, toLanguage, apiKey) {
         'text': text
     }
     url.search = new URLSearchParams(params)
-    const response = await fetch(url, { method: 'GET' })
-    return response.json()
+    try {
+        const response = await fetch(url, { method: 'GET' })
+        return response.json()
+    } catch (error) {
+        console.log(error)
+        return { translations: [] }
+    }
 }

@@ -7,7 +7,7 @@ let results = document.getElementById("query-results")
 
 var cardModal = new bootstrap.Modal(document.getElementById("card-modal"));
 
-queryForm.addEventListener("submit", async(event) => {
+queryForm.addEventListener('submit', async(event) => {
     event.preventDefault();
     updateNoteQueryResults();
 });
@@ -59,7 +59,6 @@ async function updateNoteQueryResults() {
 }
 
 results.addEventListener('click', event => {
-    console.log(event)
     if (event.target.tagName.toLowerCase() === 'li') {
         event.target.parentNode.childNodes.forEach(node => {
             node.classList.remove('active')
@@ -80,7 +79,7 @@ async function loadLatestQuery() {
     if (query != null)
         queryText.value = query.value;
     if (hidePrevExports != null)
-        hidePrevExportToggle.checked = hidePrevExports
+        hidePrevExportToggle.checked = hidePrevExports.value
 }
 
 function loadNoteInfoModal(noteId) {
@@ -98,7 +97,6 @@ function loadNoteInfoModal(noteId) {
 loadLatestQuery();
 
 invoke("deckNames", {}).then(res => {
-    console.log(res);
     if (res.result != null) {
         ankiConnectionStatus.innerText = "Connected"
         ankiConnectionStatus.className = "badge bg-success"

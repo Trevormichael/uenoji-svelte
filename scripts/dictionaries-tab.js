@@ -15,7 +15,6 @@ function getSelectedDictId() {
 }
 
 document.getElementById('dict-list').addEventListener('click', async(event) => {
-    console.log(event.target)
     var tagName = event.target.tagName.toLowerCase()
     if (tagName === 'i' || tagName === 'button') {
         var dictId = parseInt(event.target.closest('li').id)
@@ -51,7 +50,6 @@ async function updateDictConfig() {
     var id = getSelectedDictId()
     if (id != -1) {
         var dict = await db.dicts.get(id)
-        console.log(dict)
         var groupReadings = dict.groupReadings
         if (groupReadings == null)
             groupReadings = false
@@ -77,7 +75,6 @@ async function loadDict() {
     var file = fileInput.files[0]
     var zip = new JSZip();
     var res = await zip.loadAsync(file)
-    console.log(res)
     let di = JSON.parse(await res.files['index.json'].async("string"))
     var dictCount = (await db.dicts.toArray()).length
     let dictId = await db.dicts.put({ name: di.title, format: di.format, rev: di.revision, order: dictCount })
@@ -87,8 +84,6 @@ async function loadDict() {
             var text = await f.async("string");
             try {
                 var obj = JSON.parse(text)
-                console.log("saving entries for " + f.name)
-                var other = ""
                 await db.terms.bulkPut(obj.map(o => {
                     return {
                         term: o[0],

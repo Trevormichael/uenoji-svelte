@@ -52,6 +52,8 @@ document.getElementById("dict-search-form").addEventListener('submit', event => 
 
 document.getElementById("export-changes").addEventListener('click', async(event) => {
     var id = getCardPreviewId()
+    console.log('applying changes')
+    console.log(pendingCardChanges)
     await updateNoteFields(id, pendingCardChanges)
     await db.exportedNotes.put({ noteId: id })
     hideNoteExportModal()
@@ -61,7 +63,6 @@ document.getElementById("export-changes").addEventListener('click', async(event)
 document.getElementById("search-results").addEventListener('click', async(event) => {
     if (event.target.classList.contains('export-def')) {
         var data = JSON.parse(decodeURIComponent(event.target.closest("li").getAttribute('data')))
-        console.log(data)
         var mappings = (await db.mappings.toArray());
         if (mappings.length > 0) {
             var cardModelName = getCardPreviewModelName()
@@ -70,7 +71,6 @@ document.getElementById("search-results").addEventListener('click', async(event)
                 let noteTypeExp = new RegExp(m.noteType, 'i')
                 return dictNameExp.test(data.dictName) && noteTypeExp.test(cardModelName)
             });
-            console.log(mapping)
             if (mapping != null) {
                 eval(mapping.script)
                 var cardData = getCardDataWithPendingChanges();
@@ -82,7 +82,6 @@ document.getElementById("search-results").addEventListener('click', async(event)
                     }
                 }
                 updateCardPreview(getCardDataWithPendingChanges())
-                console.log(cardData)
             }
         }
     }
@@ -210,7 +209,6 @@ async function searchTerm(t) {
     })
     Array.prototype.push.apply(combined, parts[1])
     var groupedByOrder = groupBy(combined, r => r.order)
-    console.log(groupedByOrder)
     var finalTermList = []
     for (var i = 0; i < dicts.length; i++) {
         let group = groupedByOrder[i.toString()]

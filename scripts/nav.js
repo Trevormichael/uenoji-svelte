@@ -1,7 +1,6 @@
 let nav = document.getElementById("nav")
 
 nav.addEventListener('click', event => {
-    console.log(event)
     if (event.target.tagName.toLowerCase() === 'a') {
         document.querySelectorAll("#nav a").forEach(node => {
             node.classList.remove('active')
