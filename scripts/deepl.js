@@ -1,7 +1,6 @@
 let deeplUrl = 'https://api-free.deepl.com/v2/translate'
 
 async function deeplTranslate(text, toLanguage, apiKey) {
-    return { translations: [{ text: 'test translation ' }] }
     var url = new URL(deeplUrl)
     const params = {
         'auth_key': apiKey,

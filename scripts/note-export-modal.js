@@ -17,11 +17,10 @@ function showNoteExportModal() {
 
 function hideNoteExportModal() {
     cardModal.hide()
-    dispose()
     Mousetrap.unbind('command+f')
 }
 
-function dispose() {
+function resetNoteModal() {
     pendingCardChanges = {}
     searchHistory = {}
     searchTermField.value = ""

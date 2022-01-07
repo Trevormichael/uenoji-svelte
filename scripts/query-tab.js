@@ -12,6 +12,10 @@ queryForm.addEventListener("submit", async(event) => {
     updateNoteQueryResults();
 });
 
+cardModal.addEventListener('hidden.bs.modal', () => {
+    resetNoteModal
+})
+
 async function updateNoteQueryResults() {
     var hidePrevExports = hidePrevExportToggle.checked;
     var query = queryText.value;
