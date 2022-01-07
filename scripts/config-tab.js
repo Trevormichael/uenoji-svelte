@@ -14,6 +14,10 @@ document.getElementById("new-filter").addEventListener('click', event => {
     filterModal.show();
 })
 
+document.getElementById("export-config").addEventListener('click', event => {
+    exportConfig()
+})
+
 document.getElementById("delete-mappings").addEventListener('click', event => {
     db.mappings.clear().then(() => {
         updateMappingList();
@@ -52,3 +56,20 @@ async function updateEntryMappingList() {
 }
 
 updateEntryMappingList();
+
+async function exportConfig() {
+    var mappings = await db.mappings.toArray()
+    var filters = await db.fieldExclusions.toArray()
+    var entryMappings = await db.entryMappings.toArray()
+    var config = {
+        mappings: mappings,
+        filters: filters,
+        entryMappings: entryMappings
+    }
+    const str = JSON.stringify(config);
+    const bytes = new TextEncoder().encode(str);
+    const blob = new Blob([bytes], {
+        type: "application/json;charset=utf-8"
+    });
+    saveBlobToFile(blob)
+}

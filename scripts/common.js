@@ -12,6 +12,18 @@ function getSelectionText() {
     return text;
 }
 
+function saveBlobToFile(blob, fileName) {
+    var url = window.URL.createObjectURL(blob);
+    let a = document.createElement("a");
+    a.style = "display: none";
+    document.body.appendChild(a);
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+}
+
 var groupBy = (xs, keySelector) => {
     return xs.reduce((rv, x) => {
         let key = keySelector(x)
