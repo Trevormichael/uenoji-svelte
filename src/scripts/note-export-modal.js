@@ -63,6 +63,18 @@ document.getElementById("export-changes").addEventListener('click', async(event)
 document.getElementById("search-results").addEventListener('click', async(event) => {
     if (event.target.classList.contains('export-def')) {
         var data = JSON.parse(decodeURIComponent(event.target.closest("li").getAttribute('data')))
+
+        var textHighlightNode = window.getSelection().anchorNode.parentNode
+        if (textHighlightNode != null) {
+            var closestLiToHighlight = textHighlightNode.closest('li')
+            var closestLiToButton = event.target.closest('li')
+            if (closestLiToHighlight == closestLiToButton) {
+                var selection = getSelectionText()
+                data.defString = selection
+                data.defs = [selection]
+            }
+        }
+
         var mappings = (await db.mappings.toArray());
         if (mappings.length > 0) {
             var cardModelName = getCardPreviewModelName()
