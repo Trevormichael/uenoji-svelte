@@ -69,9 +69,7 @@ document.getElementById("search-results").addEventListener('click', async(event)
             var closestLiToHighlight = textHighlightNode.closest('li')
             var closestLiToButton = event.target.closest('li')
             if (closestLiToHighlight == closestLiToButton) {
-                var selection = getSelectionText()
-                data.defString = selection
-                data.defs = [selection]
+                data.selection = getSelectionText()
             }
         }
 
