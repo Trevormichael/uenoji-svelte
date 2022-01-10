@@ -1,3 +1,5 @@
+import Dexie from '../lib/dexie.min.js'
+
 var db = new Dexie("Dictionaries")
 
 db.version(1).stores({
@@ -9,3 +11,5 @@ db.version(1).stores({
     entryMappings: `&dictName, script`,
     exportedNotes: `&noteId`,
 })
+
+export default db

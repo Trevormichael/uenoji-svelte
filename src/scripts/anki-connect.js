@@ -19,3 +19,21 @@ function updateNoteFields(noteId, fields) {
         }
     })
 }
+
+async function queryNotes(query) {
+    let res = await invoke("findNotes", { query: query })
+    if (res != null) {
+        let noteIds = res.result
+        let noteRes = await invoke("notesInfo", { notes: noteIds })
+        if (noteRes != null)
+            return noteRes.result
+    }
+
+    return []
+}
+
+export default {
+    invoke,
+    updateNoteFields,
+    queryNotes
+}

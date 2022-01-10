@@ -1,35 +1,50 @@
 <script>
+    import { onMount } from "svelte";
+    import AnkiConnectBadge from "./anki/AnkiConnectBadge.svelte";
+    import AnkiQueryForm from "./anki/AnkiQueryForm.svelte";
+    import AnkiNoteListItem from "./anki/AnkiNoteListItem.svelte";
+    import anki from "../scripts/anki-connect";
 
+    let notes = [];
+
+    async function performQuery(query) {
+        notes = await anki.queryNotes(query);
+    }
 </script>
 
-<div class="row">
-    <div class="col-6">
-        <form id="query-form">
-            <input id="anki-query" class="form-control" type="text" placeholder="Query" aria-label="Query">
-        </form>
-    </div>
-    <div class="col-3">
-        <button id="execute-query" form="query-form" type="submit" class="btn btn-primary">Execute</button>
-    </div>
+<div class="px-2 pt-2">
+    <AnkiConnectBadge />
 </div>
-<div class="row pt-2">
-    <div class="col-6">
-        <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="hidePrevExports">
-            <label class="form-check-label" for="flexSwitchCheckDefault">Hide previously exported notes</label>
-        </div>
-    </div>
-</div>
-<div class="row pt-2">
-    <div class="col-6">
-        <div class="panel px-2">
-            <p id="res-count">0 results found.</p>
-        </div>
-    </div>
-</div>
-<div class="row pt-2">
+<div class="row flex-shrink-1 px-2">
     <div class="col-12">
-        <ul id="query-results" class="list-group">
-        </ul>
+        <AnkiQueryForm onQuery={performQuery} />
     </div>
 </div>
+<div class="d-flex flex-shrink-1 py-1 p-2 mx-2" id="result-count">
+    <span id="res-count">0 results found.</span>
+</div>
+<div class="d-flex flex-grow-1 pt-2 test">
+    <ul class="flex-grow-1" id="query-results">
+        {#each notes as note}
+            <AnkiNoteListItem {note} />
+        {/each}
+    </ul>
+</div>
+
+<style>
+    .test {
+        overflow: auto;
+    }
+
+    #result-count {
+        background-color: #ffffff11;
+        border-radius: 5px;
+    }
+
+    ul {
+        list-style-type: none; 
+        margin: 0;
+        padding: 0;
+        overflow: auto;
+    }
+</style>

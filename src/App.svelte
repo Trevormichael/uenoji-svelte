@@ -14,15 +14,15 @@
 
 </script>
 
-<main>
-	<header class="container-fluid p-3 nav">
+<main class="d-flex flex-column">
+	<header class="container-fluid p-3 nav flex-shrink-1">
 		<Nav
 			options={navOptions}
 			{selected}
 			on:select={(event) => (selected = event.detail)}
 		/>
 	</header>
-	<div class="p-3">
+	<div class="d-flex flex-column">
 		<svelte:component this={selected.component} />
 	</div>
 </main>
@@ -32,8 +32,23 @@
 		background-color: #282c39;
 	}
 
+	div {
+		overflow: hidden;
+	}
+
+	main {
+		width: 100%;
+		height: 100%;
+	}
+
 	:global(body) {
 		background-color: #2f3343;
 		color: white;
+		width: 100%;
+		height: 100%;
+	}
+
+	:global(:root) {
+		--card-color: #222328;
 	}
 </style>
