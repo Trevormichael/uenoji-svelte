@@ -38,8 +38,8 @@
             bind:this={queryInput}
             class="form-control flex-grow-1"
             type="text"
-            placeholder="Enter Query"
-            aria-label="Enter Query"
+            placeholder="Enter Search Query"
+            aria-label="Enter Search Query"
             autofocus
         />
     </form>
@@ -47,7 +47,8 @@
         id="execute-query"
         form="query-form"
         type="submit"
-        class="btn btn-primary ms-2 flex-shrink-1">Execute</button
+        class="btn btn-primary ms-2 flex-shrink-1"
+        ><i class="fa-solid fa-magnifying-glass me-2" />Search</button
     >
 </div>
 <div class="d-flex">

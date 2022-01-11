@@ -15,7 +15,7 @@
     {#each options as op}
         <li class="nav-item">
             <!-- svelte-ignore a11y-missing-attribute -->
-            <a class="nav-link {op == selected ? "active" : ""}" 
+            <a class="nav-link" class:active = {op == selected} 
             on:click={() => select(op)}>{op.name}</a>
         </li>
     {/each}

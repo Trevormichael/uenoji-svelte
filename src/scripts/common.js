@@ -24,7 +24,7 @@ function saveBlobToFile(blob, fileName) {
     a.remove();
 }
 
-var groupBy = (xs, keySelector) => {
+export var groupBy = (xs, keySelector) => {
     return xs.reduce((rv, x) => {
         let key = keySelector(x)
         if (!rv.hasOwnProperty(key))
@@ -34,7 +34,7 @@ var groupBy = (xs, keySelector) => {
     }, {})
 }
 
-var partition = (xs, predicate) => {
+export var partition = (xs, predicate) => {
     let part1 = []
     let part2 = []
     xs.forEach(element => {

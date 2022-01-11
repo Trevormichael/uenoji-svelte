@@ -3,15 +3,15 @@
 	import Anki from "./component/Anki.svelte";
 	import Dictionaries from "./component/Dictionaries.svelte";
 	import Configuration from "./component/Configuration.svelte";
+    import "@fortawesome/fontawesome-free/css/all.min.css";
 
 	const navOptions = [
 		{ name: "Anki", component: Anki },
 		{ name: "Dictionaries", component: Dictionaries },
-		{ name: "Configuraiton", component: Configuration },
+		{ name: "Configuration", component: Configuration },
 	];
 
 	var selected = navOptions[0];
-
 </script>
 
 <main class="d-flex flex-column">

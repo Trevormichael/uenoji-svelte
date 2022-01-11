@@ -32,8 +32,17 @@ async function queryNotes(query) {
     return []
 }
 
+async function noteInfo(noteId) {
+    let noteRes = await invoke("notesInfo", { notes: [noteId] });
+    if (noteRes != null)
+        return noteRes.result[0];
+
+    return null;
+}
+
 export default {
     invoke,
     updateNoteFields,
-    queryNotes
+    queryNotes,
+    noteInfo
 }
