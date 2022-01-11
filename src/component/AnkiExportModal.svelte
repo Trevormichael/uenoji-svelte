@@ -3,6 +3,7 @@
     import AnkiNoteInfo from "./anki/AnkiNoteInfo.svelte";
     import DictionarySearch from "./dict/DictionarySearch.svelte";
     import anki from "../scripts/anki-connect";
+    import ankinote from "./anki/ankinote"
 
     let note = null;
 
@@ -31,7 +32,7 @@
         </div>
         <div class="d-flex flex-row flex-grow-1 mainContent">
             <div class="d-flex flex-even me-1">
-                <DictionarySearch term={"感性"} />
+                <DictionarySearch term={ankinote.getFieldValue(note, "Vocab")} />
             </div>
             <div class="d-flex flex-even ms-1">
                 <AnkiNoteInfo {note} />

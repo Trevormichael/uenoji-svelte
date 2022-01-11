@@ -2,7 +2,7 @@
     import { searchTerm } from "./searcher";
 
     export let term;
-    let termResult = [1];
+    let termResult = [];
     let results = {};
 
     async function search(term) {
@@ -10,7 +10,7 @@
             results[term] = [];
             await searchTerm(term, (res) => {
                 Array.prototype.push.apply(results[term], res);
-                results = results;
+                termResult = results[term];
             });
         }
     }
@@ -19,15 +19,12 @@
         results = {};
     }
 
-    $: {
-        if (term != null) search(term);
-        termResult = results[term];
-    }
+    $: if (term != null) search(term);
 </script>
 
 <ul class="flex-grow-1">
     {#each termResult as tr}
-        <li class="py-1 px-2 mb-1">
+        <li class="pt-1 pb-2 px-2 mb-1">
             <div class="d-flex">
                 <div class="flex-grow-1 align-baseline">
                     <span class="align-baseline main">{tr.term}</span>
@@ -65,7 +62,6 @@
     }
     .def {
         font-size: 1rem;
-        line-height: 80%;
         white-space: pre-wrap;
     }
     .dict {
