@@ -10,16 +10,11 @@
     export function close() {
         isOpen = false;
     }
-
-    function keydown(e) {
-        e.stopPropagation();
-        if (e.key === "Escape") close();
-    }
 </script>
 
 {#if isOpen}
     <!-- svelte-ignore a11y-autofocus -->
-    <div class="modal" on:keydown={keydown} tabindex={0} autofocus>
+    <div class="modal" tabindex={0} autofocus>
         <div class="backdrop" on:click={close} />
 
         <div in:slide={{ duration: 200 }} class="content container-fluid">
@@ -50,7 +45,7 @@
     div.content {
         z-index: 10;
         border-radius: 10px;
-        background-color: #3f4154;
+        background-color: #2c2d37;
         overflow: hidden;
         height: 100%;
         padding: 10px 18px 10px 18px;

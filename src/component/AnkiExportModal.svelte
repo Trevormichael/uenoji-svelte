@@ -2,27 +2,54 @@
     import Modal from "./Modal.svelte";
     import AnkiNoteInfo from "./anki/AnkiNoteInfo.svelte";
     import DictionarySearch from "./dict/DictionarySearch.svelte";
+    import SearchHistory from "./dict/SearchHistory.svelte";
     import anki from "../scripts/anki-connect";
-    import ankinote from "./anki/ankinote"
+    import ankinote from "./anki/ankinote";
+    import Mousetrap from "../lib/mousetrap.min.js";
+    import { getSelectionText } from "../scripts/common";
 
     let note = null;
+    let pendingChanges = {};
+    let searchInput;
+    let dictSearchComponent;
+    let searchHistoryComponent;
+    let term;
 
     let modal;
+
+    $: searchTerm(ankinote.getFieldValue(note, "Vocab"));
+
+    function searchTerm(t) {
+        if (t != null && t.length > 0) term = t;
+    }
+
+    const searchTermFromSearchInput = () => {
+        searchTerm(searchInput.value);
+        searchInput.value = "";
+    }
+    const searchSelectionText = () => searchTerm(getSelectionText().trim());
 
     export const open = async (noteId) => {
         modal.open();
         note = await anki.noteInfo(noteId);
+        Mousetrap.bind("command+f", searchSelectionText);
     };
 
-    export const close = () => modal.close();
+    export const close = () => {
+        modal.close();
+        Mousetrap.unbind("command+f");
+    };
 </script>
 
 <Modal bind:this={modal}>
     <div class="ankiModalContent d-flex flex-column">
         <div class="flex-shrink-1">
-            <form id="dict-search-form" class="mt-2">
+            <form
+                on:submit|preventDefault={searchTermFromSearchInput}
+                class="mt-2"
+            >
                 <input
-                    id="dict-search-term"
+                    bind:this={searchInput}
                     class="form-control"
                     type="text"
                     placeholder="Search..."
@@ -30,9 +57,16 @@
                 />
             </form>
         </div>
+        <div class="flex-shrink-1 pb-2 searchHistory">
+            <SearchHistory
+                bind:this={searchHistoryComponent}
+                {term}
+                on:select={(event) => searchTerm(event.detail.name)}
+            />
+        </div>
         <div class="d-flex flex-row flex-grow-1 mainContent">
             <div class="d-flex flex-even me-1">
-                <DictionarySearch term={ankinote.getFieldValue(note, "Vocab")} />
+                <DictionarySearch bind:this={dictSearchComponent} {term} />
             </div>
             <div class="d-flex flex-even ms-1">
                 <AnkiNoteInfo {note} />

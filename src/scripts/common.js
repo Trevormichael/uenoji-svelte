@@ -2,7 +2,7 @@ const escapeHtml = (unsafe) => {
     return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
 }
 
-function getSelectionText() {
+export function getSelectionText() {
     var text = "";
     if (window.getSelection) {
         text = window.getSelection().toString();

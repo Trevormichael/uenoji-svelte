@@ -11,6 +11,9 @@
 
     async function performQuery(query) {
         notes = await anki.queryNotes(query);
+        if (notes.length == 1) {
+            onNoteSelect(notes[0])
+        }
     }
 
     function onNoteSelect(note) {

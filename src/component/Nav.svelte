@@ -4,7 +4,7 @@
     const dispatch = createEventDispatcher()
 
     export var options = []
-    export var selected = 0
+    export var selected;
 
     function select(op) {
         dispatch('select', op)

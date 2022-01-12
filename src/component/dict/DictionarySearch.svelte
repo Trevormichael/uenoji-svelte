@@ -12,11 +12,9 @@
                 Array.prototype.push.apply(results[term], res);
                 termResult = results[term];
             });
+        } else {
+            termResult = results[term];
         }
-    }
-
-    function clearAllResults() {
-        results = {};
     }
 
     $: if (term != null) search(term);

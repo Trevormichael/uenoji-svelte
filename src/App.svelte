@@ -19,7 +19,7 @@
 		<Nav
 			options={navOptions}
 			{selected}
-			on:select={(event) => (selected = event.detail)}
+			on:select={event => selected = event.detail}
 		/>
 	</header>
 	<div class="d-flex flex-column">
