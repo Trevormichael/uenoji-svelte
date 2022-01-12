@@ -1,5 +1,8 @@
 <script>
     import { slide } from "svelte/transition";
+    import { createEventDispatcher } from "svelte";
+
+    const dispatch = createEventDispatcher();
 
     let isOpen = false;
 
@@ -9,6 +12,7 @@
 
     export function close() {
         isOpen = false;
+        dispatch('close');
     }
 </script>
 

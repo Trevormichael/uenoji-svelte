@@ -51,3 +51,25 @@ input:disabled {
 .flex-even {
     flex: 1;
 }
+
+.overflow-auto {
+    overflow: auto;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #00000020;
+    border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ffffff20;
+    border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #ffffff30;
+}

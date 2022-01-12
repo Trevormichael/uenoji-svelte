@@ -15,7 +15,7 @@
 
 <ul class="flex-grow-1">
     {#each fields as field}
-        <li class="py-1 px-2 mb-1">
+        <li class="py-1 px-2 mb-1 me-2">
             <div class="label">{field.key}</div>
             <div class="value">{@html field.value}</div>
         </li>

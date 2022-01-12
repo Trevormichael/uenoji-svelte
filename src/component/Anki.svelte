@@ -34,7 +34,7 @@
 <div class="d-flex flex-shrink-1 py-1 p-2 mx-2" id="resultCount">
     <span>{notes.length} result{notes.length == 1 ? "" : "s"} found.</span>
 </div>
-<div class="d-flex flex-grow-1 pt-2 test">
+<div class="d-flex flex-grow-1 pt-2 me-2 overflow-auto">
     <ul class="flex-grow-1">
         {#each notes as note}
             <AnkiNoteListItem

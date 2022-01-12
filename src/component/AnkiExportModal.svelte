@@ -10,11 +10,10 @@
 
     let note = null;
     let pendingChanges = {};
-    let searchInput;
-    let dictSearchComponent;
-    let searchHistoryComponent;
     let term;
 
+    //bindings
+    let searchInput;
     let modal;
 
     $: searchTerm(ankinote.getFieldValue(note, "Vocab"));
@@ -26,7 +25,7 @@
     const searchTermFromSearchInput = () => {
         searchTerm(searchInput.value);
         searchInput.value = "";
-    }
+    };
     const searchSelectionText = () => searchTerm(getSelectionText().trim());
 
     export const open = async (noteId) => {
@@ -35,13 +34,15 @@
         Mousetrap.bind("command+f", searchSelectionText);
     };
 
-    export const close = () => {
-        modal.close();
+    const onClose = () => {
+        note = null;
+        pendingChanges = {};
+        term = null;
         Mousetrap.unbind("command+f");
     };
 </script>
 
-<Modal bind:this={modal}>
+<Modal bind:this={modal} on:close={onClose}>
     <div class="ankiModalContent d-flex flex-column">
         <div class="flex-shrink-1">
             <form
@@ -59,14 +60,13 @@
         </div>
         <div class="flex-shrink-1 pb-2 searchHistory">
             <SearchHistory
-                bind:this={searchHistoryComponent}
                 {term}
                 on:select={(event) => searchTerm(event.detail.name)}
             />
         </div>
         <div class="d-flex flex-row flex-grow-1 mainContent">
             <div class="d-flex flex-even me-1">
-                <DictionarySearch bind:this={dictSearchComponent} {term} />
+                <DictionarySearch {term} />
             </div>
             <div class="d-flex flex-even ms-1">
                 <AnkiNoteInfo {note} />

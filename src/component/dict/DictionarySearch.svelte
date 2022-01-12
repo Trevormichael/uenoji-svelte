@@ -22,7 +22,7 @@
 
 <ul class="flex-grow-1">
     {#each termResult as tr}
-        <li class="pt-1 pb-2 px-2 mb-1">
+        <li class="pt-1 pb-2 px-2 mb-1 me-2">
             <div class="d-flex">
                 <div class="flex-grow-1 align-baseline">
                     <span class="align-baseline main">{tr.term}</span>
