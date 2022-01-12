@@ -6,6 +6,8 @@ export async function searchTerm(t, onRes) {
         return
     }
 
+    let eval2 = eval;
+
     var terms = await db.terms.where("term").equals(t).toArray()
     terms.push.apply(terms, await db.terms.where("reading").equals(t).toArray())
     var dicts = await db.dicts.toArray()
@@ -47,7 +49,7 @@ export async function searchTerm(t, onRes) {
             return dictNameExp.test(t.dictName)
         })
         if (mapping != null) {
-            eval(mapping.script)
+            eval2(mapping.script)
                 // from eval
             return await mapEntry(t)
         } else {
