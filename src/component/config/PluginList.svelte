@@ -1,5 +1,8 @@
 <script>
     export let plugins = [];
+
+    export let onConfigureClick;
+    export let onRemoveClick;
 </script>
 
 <ul>
@@ -11,12 +14,12 @@
                     <span class="pluginVersion">{plugin.manifest.version}</span>
                     <span class="pluginVersion">{plugin.manifest.description ?? ""}</span>
                 </div>
-                <button class="icon-only-btn icon-btn"
+                <button on:click={() => { onConfigureClick(plugin); }} class="icon-only-btn icon-btn"
                     ><span>
                         <i class="fa-solid fa-gears" />
                     </span></button
                 >
-                <button class="icon-only-btn"
+                <button on:click={() => { onRemoveClick(plugin); }} class="icon-only-btn"
                     ><span>
                         <i class="fa-solid fa-trash" />
                     </span></button

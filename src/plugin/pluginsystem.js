@@ -1,13 +1,45 @@
 import db from "../data/db";
 import JSZip from '../lib/jszip.min.js';
+import { get } from 'svelte/store';
+import { note, searchTerm } from "../stores";
 
+const stores = {
+    note: note,
+    searchTerm: searchTerm
+};
+
+let actions = {};
 let listeners = {};
 
-function register(eventName, fn) {
+function registerAction(eventName, fn) {
+    actions[eventName] = fn;
+}
+
+function unregisterAction(eventName) {
+    actions[eventName] = null;
+}
+
+function registerListener(pluginName, eventName, fn) {
     if (!listeners.hasOwnProperty(eventName)) {
         listeners[eventName] = [];
     }
-    listeners[eventName].push(fn);
+    listeners[eventName][pluginName] = fn;
+}
+
+function runPluginScripts(plugin) {
+    let scripts = plugin.scripts;
+    let registered = 0;
+    scripts.forEach(s => {
+        try {
+            let func = new Function('register', s);
+            let register = (eventName, fn) => { registerListener(plugin.name, eventName, fn); };
+            func.call(null, register);
+            registered++;
+        } catch (error) {
+            console.log(error);
+        }
+    });
+    console.log(`Registered ${registered} scripts for plugin ${plugin.name}`);
 }
 
 const listPlugins = async() => {
@@ -17,14 +49,7 @@ const listPlugins = async() => {
 const registerPlugins = async() => {
     listeners = {};
     let plugins = await db.plugins.toArray();
-    plugins.forEach(plugin => {
-        let scripts = plugin.scripts;
-        scripts.forEach(s => {
-            let func = new Function('register', s);
-            func.call(null, register);
-        });
-        console.log(`Registered ${scripts.length} scripts for plugin ${plugin.name}`);
-    });
+    plugins.forEach(runPluginScripts);
 }
 
 const addPluginPackage = async(pluginFile) => {
@@ -50,18 +75,33 @@ const addPluginPackage = async(pluginFile) => {
     registerPlugins();
 }
 
-const deletePugin = async(id) => {
+const deletePlugin = async(id) => {
     await db.plugins.delete(id)
 }
 
-const dispatchEvent = (eventName, params) => {
-    let fns = listeners[eventName];
-    fns.forEach(fn => fn(params));
+const updateConfig = async(id, newConfig) => {
+    await db.plugins.update(id, { config: newConfig })
+    await registerPlugins();
+}
+
+const dispatchEvent = async(eventName, params) => {
+    if (listeners.hasOwnProperty(eventName)) {
+        let eventListeners = listeners[eventName];
+        Object.keys(eventListeners).forEach(async(key) => {
+            let fn = eventListeners[key];
+            let config = (await db.plugins.get({ name: key })).config;
+            fn(stores, get, config, params);
+        })
+    }
 }
 
 export default {
+    registerAction,
+    unregisterAction,
     dispatchEvent,
     addPluginPackage,
     registerPlugins,
-    listPlugins
+    listPlugins,
+    deletePlugin,
+    updateConfig
 };

@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import ConfigEntityHeader from "./config/ConfigEntityHeader.svelte";
+    import EditConfigModal from "./config/EditConfigModal.svelte";
     import NewPluginModal from "./config/NewPluginModal.svelte";
     import PluginList from "./config/PluginList.svelte";
     import pluginsystem from "../plugin/pluginsystem";
@@ -11,11 +12,15 @@
         plugins = await pluginsystem.listPlugins();
     }
 
+    async function removePlugin(plugin) {
+        await pluginsystem.deletePlugin(plugin.id);
+        refreshPluginList();
+    }
+
     onMount(refreshPluginList);
 
-    $: console.log(plugins);
-
     let newPluginModal;
+    let editConfigModal;
 </script>
 
 <div class="p-3">
@@ -31,6 +36,13 @@
             newPluginModal.open();
         }}
     />
-    <PluginList {plugins}/>
+    <PluginList
+        {plugins}
+        onConfigureClick={plugin => {
+            editConfigModal.open(plugin);
+        }}
+        onRemoveClick={removePlugin}
+    />
 </div>
 <NewPluginModal bind:this={newPluginModal} on:close={refreshPluginList} />
+<EditConfigModal bind:this={editConfigModal} on:close={refreshPluginList} />

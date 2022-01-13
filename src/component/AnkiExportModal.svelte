@@ -1,4 +1,5 @@
 <script>
+    import { note, searchTerm as term } from "../stores";
     import Modal from "./Modal.svelte";
     import AnkiNoteInfo from "./anki/AnkiNoteInfo.svelte";
     import DictionarySearch from "./dict/DictionarySearch.svelte";
@@ -9,18 +10,16 @@
     import { getSelectionText } from "../scripts/common";
     import ps from "../plugin/pluginsystem";
 
-    let note = null;
     let pendingChanges = {};
-    let term;
 
     //bindings
     let searchInput;
     let modal;
 
-    $: searchTerm(ankinote.getFieldValue(note, "Vocab"));
+    $: searchTerm(ankinote.getFieldValue($note, "Vocab"));
 
     function searchTerm(t) {
-        if (t != null && t.length > 0) term = t;
+        if (t != null && t.length > 0) term.set(t);
     }
 
     const searchTermFromSearchInput = () => {
@@ -31,15 +30,15 @@
 
     export const open = async (noteId) => {
         modal.open();
-        note = await anki.noteInfo(noteId);
-        ps.dispatchEvent('noteLoaded', note);
+        note.set(await anki.noteInfo(noteId));
+        ps.dispatchEvent('noteLoaded');
         Mousetrap.bind("command+f", searchSelectionText);
     };
 
     const onClose = () => {
-        note = null;
+        note.set(null);
         pendingChanges = {};
-        term = null;
+        term.set(null);
         Mousetrap.unbind("command+f");
     };
 </script>
@@ -62,16 +61,16 @@
         </div>
         <div class="flex-shrink-1 pb-2 searchHistory">
             <SearchHistory
-                {term}
+                term={$term}
                 on:select={(event) => searchTerm(event.detail.name)}
             />
         </div>
         <div class="d-flex flex-row flex-grow-1 mainContent">
             <div class="d-flex flex-even me-1">
-                <DictionarySearch {term} />
+                <DictionarySearch term={$term} />
             </div>
             <div class="d-flex flex-even ms-1">
-                <AnkiNoteInfo {note} />
+                <AnkiNoteInfo note={$note} />
             </div>
         </div>
         <div class="d-flex flex-shrink-1 mt-2">
