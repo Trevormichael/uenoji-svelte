@@ -1,9 +1,11 @@
 <script>
+	import { onMount } from 'svelte';
 	import Nav from "./component/Nav.svelte";
 	import Anki from "./component/Anki.svelte";
 	import Dictionaries from "./component/Dictionaries.svelte";
 	import Configuration from "./component/Configuration.svelte";
     import "@fortawesome/fontawesome-free/css/all.min.css";
+	import pluginsystem from './plugin/pluginsystem';
 
 	const navOptions = [
 		{ name: "Anki", component: Anki },
@@ -12,6 +14,10 @@
 	];
 
 	var selected = navOptions[0];
+
+	onMount(() => {
+		pluginsystem.registerPlugins();
+	});
 </script>
 
 <main class="d-flex flex-column">

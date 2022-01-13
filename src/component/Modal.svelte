@@ -2,6 +2,8 @@
     import { slide } from "svelte/transition";
     import { createEventDispatcher } from "svelte";
 
+    export let contentStyle = "";
+
     const dispatch = createEventDispatcher();
 
     let isOpen = false;
@@ -21,7 +23,7 @@
     <div class="modal" tabindex={0} autofocus>
         <div class="backdrop" on:click={close} />
 
-        <div in:slide={{ duration: 200 }} class="content container-fluid">
+        <div in:slide={{ duration: 200 }} class="content container-fluid" style={contentStyle}>
             <slot />
         </div>
     </div>

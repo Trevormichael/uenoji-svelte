@@ -73,3 +73,18 @@ input:disabled {
 ::-webkit-scrollbar-thumb:hover {
     background: #ffffff30;
 }
+
+button.icon-btn {
+    padding: 3px 12px 3px 9px;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+button.icon-only-btn {
+    background-color: transparent;
+    color: white;
+    border: transparent;
+    margin: 0;
+    padding: 5px 10px 5px 10px;
+    font-size: 1.1em;
+}

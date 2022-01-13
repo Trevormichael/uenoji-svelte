@@ -12,4 +12,8 @@ db.version(1).stores({
     exportedNotes: `&noteId`,
 })
 
+db.version(2).stores({
+    plugins: `++id, name, config, manifest, scripts`
+})
+
 export default db

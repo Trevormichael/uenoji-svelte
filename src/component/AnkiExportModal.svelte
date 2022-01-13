@@ -7,6 +7,7 @@
     import ankinote from "./anki/ankinote";
     import Mousetrap from "../lib/mousetrap.min.js";
     import { getSelectionText } from "../scripts/common";
+    import ps from "../plugin/pluginsystem";
 
     let note = null;
     let pendingChanges = {};
@@ -31,6 +32,7 @@
     export const open = async (noteId) => {
         modal.open();
         note = await anki.noteInfo(noteId);
+        ps.dispatchEvent('noteLoaded', note);
         Mousetrap.bind("command+f", searchSelectionText);
     };
 
