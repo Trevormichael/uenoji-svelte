@@ -16,7 +16,7 @@
 	var selected = navOptions[0];
 
 	onMount(() => {
-		pluginsystem.registerPlugins();
+		pluginsystem.reloadPlugins();
 	});
 </script>
 

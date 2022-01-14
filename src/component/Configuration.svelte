@@ -7,17 +7,21 @@
     import pluginsystem from "../plugin/pluginsystem";
 
     let plugins = [];
+    let fieldMappings = [];
 
     async function refreshPluginList() {
-        plugins = await pluginsystem.listPlugins();
+        pluginsystem.reloadPlugins();
+        plugins = pluginsystem.getLoadedPlugins();
     }
 
     async function removePlugin(plugin) {
-        await pluginsystem.deletePlugin(plugin.id);
+        pluginsystem.deletePlugin(plugin);
         refreshPluginList();
     }
 
-    onMount(refreshPluginList);
+    onMount(() => {
+        plugins = pluginsystem.getLoadedPlugins();
+    });
 
     let newPluginModal;
     let editConfigModal;
@@ -26,6 +30,7 @@
 <div class="p-3">
     <ConfigEntityHeader
         title={"Field Mappings"}
+        count={fieldMappings.length}
         buttonText={"Add Field Mapping"}
     />
     <ConfigEntityHeader
@@ -33,7 +38,7 @@
         count={plugins.length}
         buttonText={"Add Plugin"}
         on:click={() => {
-            newPluginModal.open();
+            window.plugins.openDirectory();
         }}
     />
     <PluginList

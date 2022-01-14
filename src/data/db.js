@@ -7,13 +7,7 @@ db.version(1).stores({
     dicts: `++id, name, format, rev, order, groupReadings`,
     mappings: `++id, noteType, dictName, script`,
     prefs: `&key, value`,
-    fieldExclusions: `++id, noteType, fields`,
-    entryMappings: `&dictName, script`,
     exportedNotes: `&noteId`,
-})
-
-db.version(2).stores({
-    plugins: `++id, name, config, manifest, scripts`
 })
 
 export default db

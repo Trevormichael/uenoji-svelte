@@ -10,7 +10,7 @@
         <li class="mb-1 p-3">
             <div class="d-flex align-items-center">
                 <div class="flex-grow-1 mx-2">
-                    <span class="pluginName me-2">{plugin.name}</span>
+                    <span class="pluginName me-2">{plugin.manifest.name}</span>
                     <span class="pluginVersion">{plugin.manifest.version}</span>
                     <span class="pluginVersion">{plugin.manifest.description ?? ""}</span>
                 </div>
