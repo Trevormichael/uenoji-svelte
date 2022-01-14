@@ -1,54 +1,31 @@
 <script>
     import { onMount } from "svelte";
     import ConfigEntityHeader from "./config/ConfigEntityHeader.svelte";
-    import EditConfigModal from "./config/EditConfigModal.svelte";
-    import NewPluginModal from "./config/NewPluginModal.svelte";
     import PluginList from "./config/PluginList.svelte";
-    import pluginsystem from "../plugin/pluginsystem";
+    import MappingList from "./config/MappingList.svelte";
 
-    let plugins = [];
-    let fieldMappings = [];
+    let mappingCount = 0;
+    let pluginCount = 0;
+    let mappingModal;
 
-    async function refreshPluginList() {
-        pluginsystem.reloadPlugins();
-        plugins = pluginsystem.getLoadedPlugins();
-    }
-
-    async function removePlugin(plugin) {
-        pluginsystem.deletePlugin(plugin);
-        refreshPluginList();
-    }
-
-    onMount(() => {
-        plugins = pluginsystem.getLoadedPlugins();
-    });
-
-    let newPluginModal;
-    let editConfigModal;
 </script>
 
 <div class="p-3">
     <ConfigEntityHeader
         title={"Field Mappings"}
-        count={fieldMappings.length}
+        count={mappingCount}
         buttonText={"Add Field Mapping"}
+        on:click={() =>  mappingModal.open()}
     />
+    <MappingList bind:modal={mappingModal} bind:count={mappingCount}/>
     <ConfigEntityHeader
         title={"Plugins"}
-        count={plugins.length}
+        count={pluginCount}
         buttonText={"Open Plugins Folder"}
         icon={"fa-solid fa-folder-open"}
         on:click={() => {
             window.plugins.openDirectory();
         }}
     />
-    <PluginList
-        {plugins}
-        onConfigureClick={plugin => {
-            editConfigModal.open(plugin);
-        }}
-        onRemoveClick={removePlugin}
-    />
+    <PluginList bind:count={pluginCount}/>
 </div>
-<NewPluginModal bind:this={newPluginModal} on:close={refreshPluginList} />
-<EditConfigModal bind:this={editConfigModal} on:close={refreshPluginList} />

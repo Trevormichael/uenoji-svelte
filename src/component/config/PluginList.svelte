@@ -1,51 +1,35 @@
 <script>
-    export let plugins = [];
+    import { onMount } from "svelte";
+    import ConfigList from "./ConfigList.svelte";
+    import PluginCard from "./PluginCard.svelte";
+    import EditConfigModal from "./EditConfigModal.svelte";
+    import db from "../../data/db";
+    import pluginsystem from "../../plugin/pluginsystem";
 
-    export let onConfigureClick;
-    export let onRemoveClick;
+    let plugins = [];
+    let modal;
+    export let count;
+
+    $: count = plugins.length;
+
+    async function updatePluginList() {
+        pluginsystem.reloadPlugins();
+        plugins = pluginsystem.getLoadedPlugins();
+    }
+
+    async function removePlugin(event) {
+        pluginsystem.deletePlugin(event.detail);
+        updatePluginList();
+    }
+
+    const configurePlugin = (event) => modal.open(event.detail);
+
+    onMount(() => {
+        plugins = pluginsystem.getLoadedPlugins();
+    });
 </script>
 
-<ul>
-    {#each plugins as plugin}
-        <li class="mb-1 p-3">
-            <div class="d-flex align-items-center">
-                <div class="flex-grow-1 mx-2">
-                    <span class="pluginName me-2">{plugin.manifest.name}</span>
-                    <span class="pluginVersion">{plugin.manifest.version}</span>
-                    <span class="pluginVersion">{plugin.manifest.description ?? ""}</span>
-                </div>
-                <button on:click={() => { onConfigureClick(plugin); }} class="icon-only-btn icon-btn"
-                    ><span>
-                        <i class="fa-solid fa-gears" />
-                    </span></button
-                >
-                <button on:click={() => { onRemoveClick(plugin); }} class="icon-only-btn"
-                    ><span>
-                        <i class="fa-solid fa-trash" />
-                    </span></button
-                >
-            </div>
-        </li>
-    {/each}
-</ul>
-
-<style>
-    .pluginName {
-        font-size: 1.3rem;
-    }
-
-    .pluginVersion {
-        font-size: 0.7rem;
-        color: #ffffffcc;
-    }
-
-    ul {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-    }
-    li {
-        background-color: var(--card-color);
-        border-radius: 10px;
-    }
-</style>
+<ConfigList items={plugins} let:item={i}>
+    <PluginCard plugin={i} on:configure={configurePlugin} on:delete={removePlugin}/>
+</ConfigList>
+<EditConfigModal bind:this={modal} on:close={updatePluginList} />

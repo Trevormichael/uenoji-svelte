@@ -1,5 +1,6 @@
 <script>
     import Modal from "../Modal.svelte";
+    import CancelSaveFooter from "./CancelSaveFooter.svelte";
     import pluginsystem from "../../plugin/pluginsystem";
     import { allowTab } from "../actions";
 
@@ -41,23 +42,10 @@
             rows="12"
         />
     </form>
-    <div class="d-flex flex-grow-1 justify-content-end">
-        <button
-            class="btn btn-secondary me-2"
-            on:click={() => {
-                modal.close();
-            }}>Cancel</button
-        >
-        <button form="configForm" class="btn btn-primary"
-            ><i class="fa-solid fa-floppy-disk me-2" />Save</button
-        >
-    </div>
+    <CancelSaveFooter on:cancel={() => { modal.close(); }} form={"configForm"}/>
 </Modal>
 
 <style>
-    button {
-        float: right;
-    }
     textarea {
         font-family: monospace;
     }
