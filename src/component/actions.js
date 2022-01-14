@@ -2,7 +2,7 @@ export const allowTab = (node) => {
 
     const handleTab = (event) => {
         if (event.key === 'Tab') {
-            let value = "    ";
+            let value = "  ";
             let startPos = node.selectionStart;
             let endPos = node.selectionEnd;
             node.value = node.value.substring(0, startPos) + value + node.value.substring(endPos, node.value.length);

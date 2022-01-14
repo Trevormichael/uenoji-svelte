@@ -1,26 +1,41 @@
 import db from '../../data/db'
 import { partition, groupBy } from '../../scripts/common'
 
-export async function searchTerm(t, onRes) {
+export async function searchTerm(t) {
     if (t == null || t.length == 0) {
         return
     }
 
-    let eval2 = eval;
-
     var terms = await db.terms.where("term").equals(t).toArray()
+    let kanji = [];
+    for (var i = 0; i < t.length; i++) {
+        let k = await db.kanji.where("kanji").equals(t[i]).toArray();
+        if (k != null) Array.prototype.push.apply(kanji, k);
+    }
     terms.push.apply(terms, await db.terms.where("reading").equals(t).toArray())
     var dicts = await db.dicts.toArray()
     terms.forEach(t => {
-        var dict = dicts.find((d) => d.id == t.dict)
+        var dict = dicts.find((d) => d.id == t.dictId)
         t.dictName = dict.name
         t.order = dict.order
         t.defString = t.defs.join(', ')
         t.group = dict.groupReadings
+        t.heading = "Terms"
+    })
+    let kanjiAsTerms = kanji.map(k => {
+        return {
+            term: k.kanji,
+            reading: `${k.onyomi} | ${k.kunyomi}`,
+            defs: k.meanings,
+            defString: k.meanings.join(", "),
+            order: -1,
+            heading: "Kanji",
+            dictName: dicts.find(d => d.id == k.dictId).name
+        };
     })
     var parts = partition(terms, (t) => t.group)
     var grouped = groupBy(parts[0], (t) => {
-        return t.term + '_' + t.reading + '_' + t.dict
+        return t.term + '_' + t.reading + '_' + t.dictId
     })
     var combined = Object.keys(grouped).map(key => {
         var ts = grouped[key]
@@ -41,19 +56,7 @@ export async function searchTerm(t, onRes) {
             Array.prototype.push.apply(finalTermList, sorted)
         }
     }
-    var entryMappings = await db.entryMappings.toArray()
     finalTermList.forEach(t => t.defString = t.defString.replace(/\n$/, ''))
-    await Promise.all(finalTermList.map(async(t) => {
-        var mapping = entryMappings.find(m => {
-            let dictNameExp = new RegExp(m.dictName, 'i')
-            return dictNameExp.test(t.dictName)
-        })
-        if (mapping != null) {
-            eval2(mapping.script)
-                // from eval
-            return await mapEntry(t)
-        } else {
-            return [t]
-        }
-    }).map(p => p.then(onRes)))
+    Array.prototype.push.apply(kanjiAsTerms, finalTermList)
+    return kanjiAsTerms;
 }
