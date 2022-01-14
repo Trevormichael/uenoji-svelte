@@ -84,7 +84,7 @@ const dispatchEvent = async(eventName, params) => {
         let eventListeners = listeners[eventName];
         Object.keys(eventListeners).forEach(async(key) => {
             let fn = eventListeners[key];
-            let config = loadedPlugins.find(p => p.manifest.name == key).config;
+            let config = loadedPlugins[key].config;
             fn(stores, get, config, params);
         })
     }

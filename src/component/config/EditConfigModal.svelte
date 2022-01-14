@@ -1,6 +1,7 @@
 <script>
     import Modal from "../Modal.svelte";
     import pluginsystem from "../../plugin/pluginsystem";
+    import { allowTab } from "../actions";
 
     let modal;
     let configValue;
@@ -25,7 +26,7 @@
 </script>
 
 <Modal bind:this={modal} contentStyle={"width: 80%; height: auto;"} on:close>
-    <h6>{plugin.name} Configuration</h6>
+    <h6>{plugin.manifest.name} Configuration</h6>
     <form
         on:submit|preventDefault={onSubmit}
         id="configForm"
@@ -33,6 +34,7 @@
     >
         <textarea
             bind:value={configValue}
+            use:allowTab
             class="form-control"
             type="text"
             placeholder="JSON Configuration"
