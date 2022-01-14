@@ -2,6 +2,7 @@
   export let title;
   export let count;
   export let buttonText;
+  export let icon = "fa-solid fa-plus"
 </script>
 
 <div class="d-flex align-items-center mb-3">
@@ -12,7 +13,7 @@
   <hr class="flex-grow-1 mx-3">
   <button class="btn btn-primary icon-btn" on:click>
     <span>
-      <i class="fa-solid fa-plus me-2" />{buttonText}
+      <i class="{icon} me-2" />{buttonText}
     </span>
   </button>
 </div>

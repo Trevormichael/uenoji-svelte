@@ -36,7 +36,8 @@
     <ConfigEntityHeader
         title={"Plugins"}
         count={plugins.length}
-        buttonText={"Add Plugin"}
+        buttonText={"Open Plugins Folder"}
+        icon={"fa-solid fa-folder-open"}
         on:click={() => {
             window.plugins.openDirectory();
         }}
