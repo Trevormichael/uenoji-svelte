@@ -30,10 +30,12 @@
         };
         modal.open();
     };
+
+    const isNewFieldMapping = () => !fieldMapping.id;
 </script>
 
 <Modal bind:this={modal} contentStyle={"width: 80%; height: auto;"} on:close>
-    <h6>{fieldMapping ? "Edit" : "New"} Field Mapping</h6>
+    <h6>{isNewFieldMapping() ? "New" : "Edit"} Field Mapping</h6>
     <form
         id="mappingForm"
         class="flex-grow-1"
