@@ -14,9 +14,6 @@
         "svelte-dev": "rollup -c -w",
         "svelte-start": "sirv public --no-clear"
     },
-    "files": [
-        "preload.js"
-    ],
     "keywords": [],
     "author": {
         "name": "Trevor Michael",
@@ -26,7 +23,8 @@
     "config": {
         "forge": {
             "packagerConfig": {},
-            "makers": [{
+            "makers": [
+                {
                     "name": "@electron-forge/maker-squirrel",
                     "config": {
                         "name": "uenoji_ef"
