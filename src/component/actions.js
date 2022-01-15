@@ -20,18 +20,3 @@ export const allowTab = (node) => {
         }
     }
 }
-
-export const autoexpand = (node) => {
-    const onInput = (event) => {
-        node.style.height = "";
-        node.style.height = node.scrollHeight + "px";
-    }
-
-    node.addEventListener('input', onInput, true)
-
-    return {
-        destroy() {
-            node.removeEventListener('input', onInput, true)
-        }
-    }
-}

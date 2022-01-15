@@ -74,10 +74,12 @@
     onMount(() => {
         ps.dispatchEvent("noteLoaded")
         Mousetrap.bind("command+f", searchSelectionText);
+        Mousetrap.bind("escape", dispatchCancel);
     });
     onDestroy(() => {
         term.set(null);
         Mousetrap.unbind("command+f");
+        Mousetrap.unbind("escape");
     });
 </script>
 

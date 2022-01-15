@@ -1,6 +1,5 @@
 <script>
     import { createEventDispatcher, onMount } from "svelte";
-    import { autoexpand } from "../actions";
     const dispatch = createEventDispatcher();
 
     export let note;
@@ -59,10 +58,13 @@
     <ul class="d-flex flex-column m-1 me-2 p-3">
         {#each fields as field}
             <li class="flex-shrink-1">
-                <div class="label">{field.key}</div>
+                {#if isChangedFromNote(field)}
+                    <div class="label text-warning">{field.key}*</div>
+                {:else}
+                    <div class="label">{field.key}</div>
+                {/if}
                 <div
                     bind:innerHTML={field.value}
-                    use:autoexpand
                     contenteditable="true"
                     class="mousetrap form-control flex-grow-1 value"
                     type="text"
@@ -99,9 +101,10 @@
         list-style-type: initial;
         list-style-position: inside;
         margin: 0;
+        margin-bottom: 6px;
         height: auto;
         overflow: hidden;
-        resize: none;        
+        resize: none;
     }
     .value:empty:not(:focus):before {
         content: attr(placeholder);
