@@ -4,6 +4,7 @@
     import AnkiNoteListItem from "./anki/AnkiNoteListItem.svelte";
     import anki from "../scripts/anki-connect";
     import AnkiExportModal from "./AnkiExportModal.svelte";
+    import { show } from "./toast/toast";
 
     let notes = [];
     let selectedNoteId;
@@ -12,7 +13,7 @@
     async function performQuery(query) {
         notes = await anki.queryNotes(query);
         if (notes.length == 1) {
-            onNoteSelect(notes[0])
+            onNoteSelect(notes[0]);
         }
     }
 
@@ -20,7 +21,6 @@
         selectedNoteId = note.noteId;
         modal.open(selectedNoteId);
     }
-    
 </script>
 
 <div class="px-2 pt-2">
@@ -47,7 +47,10 @@
         {/each}
     </ul>
 </div>
-<AnkiExportModal bind:this={modal}/>
+<AnkiExportModal
+    bind:this={modal}
+    onExport={() => show("Note exported successfully", "success", 4000)}
+/>
 
 <style>
     #resultCount {

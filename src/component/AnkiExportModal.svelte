@@ -12,6 +12,8 @@
     import { getSelectionText } from "../scripts/common";
     import ps from "../plugin/pluginsystem";
 
+    export let onExport; 
+
     let pendingChanges = {};
 
     //bindings
@@ -53,6 +55,7 @@
         let id = get(note).noteId;
         await anki.updateNoteFields(id, pendingChanges);
         modal.close();
+        onExport();
     }
 
     export const open = async (noteId) => {

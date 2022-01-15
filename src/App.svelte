@@ -5,6 +5,7 @@
 	import Dictionaries from "./component/Dictionaries.svelte";
 	import Configuration from "./component/Configuration.svelte";
     import "@fortawesome/fontawesome-free/css/all.min.css";
+	import Toast from "./component/toast/Toast.svelte";
 	import pluginsystem from './plugin/pluginsystem';
 
 	const navOptions = [
@@ -21,6 +22,7 @@
 </script>
 
 <main class="d-flex flex-column">
+	<Toast/>
 	<header class="container-fluid p-3 nav flex-shrink-1">
 		<Nav
 			options={navOptions}
