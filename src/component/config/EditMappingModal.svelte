@@ -7,7 +7,7 @@
     import { allowTab } from "../actions";
 
     const dispatch = createEventDispatcher();
-    const dispatchEditSuccess = () => dispatch("editsuccess");
+    const dispatchEditSuccess = (params) => dispatch("editsuccess", params);
     const dispatchCancel = () => dispatch("cancel");
 
     export let mapping;
@@ -18,12 +18,13 @@
         </span>`;
 
     async function onSubmit() {
-        if (mapping.id) {
-            await db.mappings.update(mapping.id, mapping);
-        } else {
+        let isNew = !mapping.id;
+        if (isNew) {
             await db.mappings.put(mapping);
+        } else {
+            await db.mappings.update(mapping.id, mapping);
         }
-        dispatchEditSuccess();
+        dispatchEditSuccess({ isNew: isNew });
     }
 
     const isNewFieldMapping = () => !mapping.id;

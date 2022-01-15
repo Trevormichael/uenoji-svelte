@@ -4,6 +4,7 @@
     import MappingCard from "./MappingCard.svelte";
     import EditMappingModal from "./EditMappingModal.svelte";
     import db from "../../data/db";
+    import { show } from "../toast/toast";
 
     let selectedMapping;
     let mappings = [];
@@ -25,7 +26,10 @@
     };
     const editMapping = (event) => { selectedMapping = event.detail };
     const onEditCancel = () => { selectedMapping = null; };
-    const onEditSuccess = () => {
+    const onEditSuccess = (event) => {
+        let isNew = event.detail.isNew;
+        let message = isNew ? "Field mapping added." : "Field mapping edited.";
+        show(message, "success", 3000);
         selectedMapping = null;
         updateMappingList();
     };

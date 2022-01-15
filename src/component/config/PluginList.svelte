@@ -4,6 +4,7 @@
     import PluginCard from "./PluginCard.svelte";
     import EditConfigModal from "./EditConfigModal.svelte";
     import pluginsystem from "../../plugin/pluginsystem";
+    import { show } from "../toast/toast";
 
     let plugins = [];
     let selectedPlugin;
@@ -25,6 +26,7 @@
     const onEditConfigCancel = () => { selectedPlugin = null; };
     const onEditConfigSuccess = () => {
         selectedPlugin = null;
+        show("Plugin config updated.", "success", 3000);
         updatePluginList();
     };
 
