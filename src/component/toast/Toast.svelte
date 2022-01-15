@@ -22,8 +22,9 @@
     }
 
     const getIcon = (type) => {
-        if (type === "success") return "fa-circle-check";
-        if (type === "error") return "fa-circle-exclamation";
+        if (type === "toast-success") return "fa-circle-check";
+        if (type === "toast-progress") return "fa-arrows-rotate";
+        if (type === "toast-error") return "fa-circle-exclamation";
     };
 </script>
 
@@ -34,10 +35,10 @@
         in:slide={{ easing: backOut, duration: 150 }}
         out:fade={{ duration: 150 }}
     >
-        <i class="fa-solid {getIcon(toast.type)} fa-circle-check me-3" />
+        <i class="mainIcon fa-solid {getIcon(toast.type)} me-3" />
         <span class="flex-grow-1">{toast.message}</span>
         <button on:click={dismiss} class="icon-only-btn"
-            ><i class="fa-solid fa-xmark ms-2" /></button
+            ><i class="closeIcon fa-solid fa-xmark ms-2" /></button
         >
     </div>
 {/if}
@@ -46,15 +47,25 @@
     div.toast {
         position: fixed;
         top: 20px;
-        left: auto;
         right: 20px;
-        border-radius: 10px;
-        padding: 12px 20px 12px 20px;
+        left: auto;
+        border-radius: 8px;
+        width: auto;
+        height: auto;
+        max-width: 40vw;
+        padding: 12px 22px 15px 20px;
         font-weight: bold;
-        font-size: 1rem;
-        line-height: 1rem;
+        font-size: 0.9rem;
+        line-height: 1.1rem;
+        border-width: 0;
     }
-    div.toast.success {
+    i.mainIcon {
+        font-size: 1.2rem;
+    }
+    i.closeIcon {
+        font-size: 1.1rem;
+    }
+    div.toast-success {
         background: rgb(84, 201, 120);
         background: linear-gradient(
             150deg,
@@ -62,7 +73,15 @@
             rgb(33, 168, 132) 100%
         );
     }
-    div.toast.error {
+    div.toast-progress {
+        background: rgb(11, 195, 215);
+        background: linear-gradient(
+            150deg,
+            rgba(11, 195, 215, 1) 0%,
+            rgba(11, 94, 215, 1) 100%
+        );
+    }
+    div.toast-error {
         background: rgb(217, 70, 70);
         background: linear-gradient(
             150deg,

@@ -28,7 +28,7 @@
     <div class="d-flex">
         <div class="flex-grow-1 align-baseline">
             <span class="align-baseline main">{term.term}</span>
-            <span class="align-baseline reading">{term.reading}</span>
+            <span class="align-baseline reading">{term.reading} - {term.freq}</span>
             <div class="align-baseline def">{term.defString}</div>
             <div class="align-baseline dict mt-1">{term.dictName}</div>
         </div>

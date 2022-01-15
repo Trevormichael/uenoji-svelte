@@ -88,3 +88,17 @@ button.icon-only-btn {
     padding: 5px 10px 5px 10px;
     font-size: 1.1em;
 }
+
+.form-control {
+    background-color: #222328;
+    border-color: #3d404a;
+    border-width: 2px;
+    color: white;
+}
+
+.form-control:focus {
+    background-color: #222328;
+    border-color: #3d404a;
+    border-width: 2px;
+    color: white;
+}

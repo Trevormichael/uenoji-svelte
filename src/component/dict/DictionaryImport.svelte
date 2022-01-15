@@ -1,5 +1,6 @@
 <script>
-    import importer from './dictionaryimporter'
+    import importer from "./dictionaryimporter";
+    import { show } from "../toast/toast";
 
     export let onImport;
 
@@ -9,11 +10,21 @@
         console.log(fileInput.files)
         let file = fileInput.files[0];
         if (file != null) {
-            await importer.importDictionary(file, (progress) => {
-                console.log(progress)
-            })
+            await importer.importDictionary(file, onProgress, onError)
             onImport();
         }
+    }
+
+    function onProgress(perc) {
+        let rounded = Math.round(perc * 100);
+        if (rounded >= 100)
+            show("Dictionary import complete.", "success", 5000);
+        else
+            show(`Import in progress... ${rounded}%`, "progress", 10000);
+    }
+
+    function onError(msg) {
+        show(msg, "error", 5000);
     }
 
 </script>

@@ -20,7 +20,7 @@ export async function searchTerm(t) {
         t.order = dict.order
         t.defString = t.defs.join(', ')
         t.group = dict.groupReadings
-        t.heading = "Terms"
+        t.heading = dict.name;
     })
     let kanjiAsTerms = kanji.map(k => {
         return {

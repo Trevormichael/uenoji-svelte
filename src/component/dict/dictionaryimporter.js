@@ -41,28 +41,36 @@ function getImporterForFile(file) {
         return null;
 }
 
-async function importDictionary(file, onProgress) {
+async function importDictionary(file, onProgress, onError) {
     let zip = new JSZip();
     let res = await zip.loadAsync(file)
     let di = JSON.parse(await res.files['index.json'].async("string"))
     let dictCount = (await db.dicts.toArray()).length
+    let existing = await db.dicts.where({ name: di.title }).toArray();
+    if (existing.length > 0) {
+        onError("A dictionary with the same name is already imported.")
+        return;
+    }
     let dictId = await db.dicts.put({ name: di.title, format: di.format, rev: di.revision, order: dictCount })
-    let fileCount = res.files.length;
-    let current = 0;
-    for (const key in res.files) {
-        var f = res.files[key]
-        let importer = getImporterForFile(f);
-        if (importer != null) {
-            var text = await f.async("string");
-            try {
-                var obj = JSON.parse(text)
-                await importer.table.bulkPut(obj.map(o => importer.parse(o, dictId)))
-                current++;
-                if (onProgress)
-                    onProgress(current / fileCount);
-            } catch (error) {
-                console.log(error)
-            }
+    let importers = Object.values(res.files).map(f => {
+        return {
+            file: f,
+            importer: getImporterForFile(f)
+        };
+    }).filter(i => i.importer !== null);
+    let total = importers.length;
+    for (var i = 0; i < total; i++) {
+        let file = importers[i].file;
+        let importer = importers[i].importer;
+        var text = await file.async("string");
+        try {
+            var obj = JSON.parse(text)
+            await importer.table.bulkPut(obj.map(o => importer.parse(o, dictId)))
+            await new Promise(r => setTimeout(r, 500));
+            if (onProgress)
+                onProgress((i + 1) / total);
+        } catch (error) {
+            console.log(error)
         }
     }
 }
