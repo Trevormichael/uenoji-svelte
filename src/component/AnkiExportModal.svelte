@@ -1,5 +1,6 @@
 <script>
-    import { note, searchTerm as term } from "../stores";
+    import { searchTerm as term } from "../stores";
+    import { createEventDispatcher, onMount, onDestroy } from "svelte";
     import { get } from "svelte/store";
     import Modal from "./Modal.svelte";
     import AnkiNoteInfo from "./anki/AnkiNoteInfo.svelte";
@@ -11,32 +12,37 @@
     import Mousetrap from "../lib/mousetrap.min.js";
     import { getSelectionText } from "../scripts/common";
     import ps from "../plugin/pluginsystem";
+    
+    const dispatch = createEventDispatcher();
 
-    export let onExport; 
+    export let note;
+    export let onExport;
 
-    let pendingChanges = {};
+    let noteInfo;
+    let noteFields;
+    let hasChanges;
 
     //bindings
-    let searchInput;
-    let modal;
+    let searchValue;
 
-    $: searchTerm(ankinote.getFieldValue($note, "Vocab"));
+    $: searchTerm(ankinote.getFieldValue(note, "Vocab"));
 
     function searchTerm(t) {
         if (t != null && t.length > 0) term.set(t);
     }
 
     const searchTermFromSearchInput = () => {
-        searchTerm(searchInput.value);
-        searchInput.value = "";
+        searchTerm(searchValue);
+        searchValue = "";
     };
 
     const searchSelectionText = () => searchTerm(getSelectionText().trim());
 
     const getNoteWithChanges = () => {
-        let n = get(note);
-        Object.keys(pendingChanges).forEach((key) => {
-            n.fields[key].value = pendingChanges[key];
+        let n = note;
+        (noteFields || []).forEach(f => {
+            if (f.changed)
+                n.fields[f.key].value = f.value;
         });
         return n;
     };
@@ -44,39 +50,38 @@
     const addTermToNote = async (event) => {
         let term = event.detail.term;
         let selection = event.detail.selection;
-        pendingChanges = await termexporter.mapTermToFieldChanges(
+        let changes = await termexporter.mapTermToFieldChanges(
             term,
             selection,
             getNoteWithChanges()
         );
-    };
+        noteInfo.applyChanges(changes);
+    };  
 
     const exportChanges = async () => {
-        let id = get(note).noteId;
-        await anki.updateNoteFields(id, pendingChanges);
-        modal.close();
+        let id = note.noteId;
+        let changes = noteInfo.getChanges();
+        await anki.updateNoteFields(id, changes);
         onExport();
+    };
+
+    const onFieldChange = (event) => {
+        hasChanges = event.detail.hasChanges;
     }
 
-    export const open = async (noteId) => {
-        modal.open();
-        note.set(await anki.noteInfo(noteId));
-        ps.dispatchEvent("noteLoaded");
-        Mousetrap.bind("command+f", searchSelectionText);
-    };
+    const dispatchCancel = () => dispatch("cancel");
 
-    const onClose = () => {
-        note.set(null);
-        pendingChanges = {};
+    onMount(() => {
+        ps.dispatchEvent("noteLoaded")
+        Mousetrap.bind("command+f", searchSelectionText);
+    });
+    onDestroy(() => {
         term.set(null);
         Mousetrap.unbind("command+f");
-    };
-
-    $: hasPendingChanges = Object.keys(pendingChanges).length > 0;
-
+    });
 </script>
 
-<Modal bind:this={modal} on:close={onClose}>
+<Modal on:clickoutside={dispatchCancel}>
     <div class="ankiModalContent d-flex flex-column">
         <div class="flex-shrink-1">
             <form
@@ -84,7 +89,7 @@
                 class="mt-2"
             >
                 <input
-                    bind:this={searchInput}
+                    bind:value={searchValue}
                     class="form-control"
                     type="text"
                     placeholder="Search..."
@@ -103,14 +108,17 @@
                 <TermList term={$term} on:export={addTermToNote} />
             </div>
             <div class="d-flex flex-even ms-1">
-                <AnkiNoteInfo note={$note} fieldChanges={pendingChanges} />
+                <AnkiNoteInfo
+                    bind:this={noteInfo}
+                    bind:fields={noteFields}
+                    on:fieldchange={onFieldChange}
+                    note={note}
+                />
             </div>
         </div>
         <div class="d-flex flex-shrink-1 mt-2">
             <button
-                on:click={() => {
-                    pendingChanges = {};
-                }}
+                on:click={noteInfo.clearChanges}
                 class="btn btn-danger"
                 ><i class="fa-solid fa-arrow-rotate-left me-2" />Clear all
                 changes</button
@@ -118,14 +126,12 @@
             <div class="d-flex flex-grow-1 justify-content-end">
                 <button
                     class="btn btn-secondary me-2"
-                    on:click={() => {
-                        modal.close();
-                    }}>Cancel</button
+                    on:click={dispatchCancel}>Cancel</button
                 >
-                <button 
-                disabled={!hasPendingChanges}
-                on:click={exportChanges}
-                class="btn btn-primary"
+                <button
+                    disabled={!hasChanges}
+                    on:click={exportChanges}
+                    class="btn btn-primary"
                     ><i class="fa-solid fa-share me-2" />Export changes</button
                 >
             </div>

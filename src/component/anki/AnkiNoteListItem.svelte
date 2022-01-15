@@ -1,4 +1,7 @@
 <script>
+    import { createEventDispatcher } from "svelte";
+    const dispatch = createEventDispatcher();
+
     export let note;
     export let active;
 
@@ -14,9 +17,11 @@
     }
 
     $: fields = getFields(note);
+
+    const onNoteSelect = () => dispatch("select", note)
 </script>
 
-<li class="mx-2 mb-1 {active ? "bg-primary": ""}" on:click>
+<li class="mx-2 mb-1 {active ? "bg-primary": ""}" on:click={onNoteSelect}>
     <span class="modelName pb-1">{note.modelName}</span>
     <div class="fields">{fields}</div>
     <div class="noteId pt-1">Note Id: {note.noteId}</div>

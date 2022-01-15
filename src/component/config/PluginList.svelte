@@ -3,11 +3,10 @@
     import ConfigList from "./ConfigList.svelte";
     import PluginCard from "./PluginCard.svelte";
     import EditConfigModal from "./EditConfigModal.svelte";
-    import db from "../../data/db";
     import pluginsystem from "../../plugin/pluginsystem";
 
     let plugins = [];
-    let modal;
+    let selectedPlugin;
     export let count;
 
     $: count = plugins.length;
@@ -22,7 +21,12 @@
         updatePluginList();
     }
 
-    const configurePlugin = (event) => modal.open(event.detail);
+    const configurePlugin = (event) => { selectedPlugin = event.detail; };
+    const onEditConfigCancel = () => { selectedPlugin = null; };
+    const onEditConfigSuccess = () => {
+        selectedPlugin = null;
+        updatePluginList();
+    };
 
     onMount(() => {
         plugins = pluginsystem.getLoadedPlugins();
@@ -30,6 +34,16 @@
 </script>
 
 <ConfigList items={plugins} let:item={i}>
-    <PluginCard plugin={i} on:configure={configurePlugin} on:delete={removePlugin}/>
+    <PluginCard
+        plugin={i}
+        on:configure={configurePlugin}
+        on:delete={removePlugin}
+    />
 </ConfigList>
-<EditConfigModal bind:this={modal} on:close={updatePluginList} />
+{#if selectedPlugin}
+    <EditConfigModal
+        plugin={selectedPlugin}
+        on:cancel={onEditConfigCancel}
+        on:editsuccess={onEditConfigSuccess}
+    />
+{/if}

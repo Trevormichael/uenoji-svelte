@@ -1,13 +1,13 @@
 import db from "../data/db";
 import {get } from 'svelte/store';
-import { note, searchTerm } from "../stores";
+import { selectedNote, searchTerm } from "../stores";
 
 let loadedPlugins = {};
 let actions = {};
 let listeners = {};
 
 const stores = {
-    note: note,
+    note: selectedNote,
     searchTerm: searchTerm
 };
 

@@ -1,32 +1,36 @@
 <script>
+    import { onMount, createEventDispatcher } from "svelte";
     import Modal from "../Modal.svelte";
     import CancelSaveFooter from "./CancelSaveFooter.svelte";
     import pluginsystem from "../../plugin/pluginsystem";
     import { allowTab } from "../actions";
+    import { show } from "../toast/toast";
+    const dispatch = createEventDispatcher();
 
-    let modal;
+    export let plugin;
     let configValue;
-    let plugin;
 
-    export const open = (p) => {
-        modal.open();
-        plugin = p;
-        let config = JSON.stringify(plugin.config, null, 1);
-        configValue = config;
-    };
+    const dispatchEditSuccess = () => dispatch("editsuccess")
+    const dispatchCancel = () => dispatch("cancel");
 
     async function onSubmit() {
         try {
             let newConfig = JSON.parse(configValue);
             await pluginsystem.updateConfig(plugin, newConfig);
-            modal.close();
+            dispatchEditSuccess();
         } catch (error) {
+            show(error, "error", 5000);
             console.log(error);
+            dispatchCancel();
         }
     }
+
+    onMount(() => {
+        configValue = JSON.stringify(plugin.config, null, 1);
+    });
 </script>
 
-<Modal bind:this={modal} contentStyle={"width: 80%; height: auto;"} on:close>
+<Modal contentStyle={"width: 80%; height: auto;"} on:clickoutside={dispatchCancel}>
     <h6>{plugin.manifest.name} Configuration</h6>
     <form
         on:submit|preventDefault={onSubmit}
@@ -42,7 +46,7 @@
             rows="12"
         />
     </form>
-    <CancelSaveFooter on:cancel={() => { modal.close(); }} form={"configForm"}/>
+    <CancelSaveFooter on:cancel={dispatchCancel} form={"configForm"}/>
 </Modal>
 
 <style>

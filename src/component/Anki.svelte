@@ -1,4 +1,5 @@
 <script>
+    import { selectedNote } from "../stores";
     import AnkiConnectBadge from "./anki/AnkiConnectBadge.svelte";
     import AnkiQueryForm from "./anki/AnkiQueryForm.svelte";
     import AnkiNoteListItem from "./anki/AnkiNoteListItem.svelte";
@@ -7,22 +8,21 @@
     import { show } from "./toast/toast";
 
     let notes = [];
-    let selectedNoteId;
-    let modal;
 
     async function performQuery(query) {
         notes = await anki.queryNotes(query);
         if (notes.length == 1) {
-            onNoteSelect(notes[0]);
+            selectedNote.set(notes[0]);
         }
     }
 
-    function onNoteSelect(note) {
-        selectedNoteId = note.noteId;
-        modal.open(selectedNoteId);
+    async function onNoteSelect(event) {
+        let note = await anki.noteInfo(event.detail.noteId);
+        selectedNote.set(note);
     }
 
     function onExport() {
+        selectedNote.set(null);
         show("Note exported successfully", "success", 4000)
     }
 </script>
@@ -43,18 +43,20 @@
         {#each notes as note}
             <AnkiNoteListItem
                 {note}
-                on:click={() => {
-                    onNoteSelect(note);
-                }}
-                active={selectedNoteId === note.noteId}
+                on:select={onNoteSelect}
+                active={$selectedNote && $selectedNote.noteId === note.noteId}
             />
         {/each}
     </ul>
 </div>
+
+{#if $selectedNote}
 <AnkiExportModal
-    bind:this={modal}
+    note={$selectedNote}
     onExport={onExport}
+    on:cancel={() => { selectedNote.set(null); }}
 />
+{/if}
 
 <style>
     #resultCount {

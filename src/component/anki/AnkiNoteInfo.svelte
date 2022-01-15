@@ -1,41 +1,90 @@
 <script>
+    import { createEventDispatcher, onMount } from "svelte";
+    import { autoexpand } from "../actions";
+    const dispatch = createEventDispatcher();
+
     export let note;
-    export let fieldChanges;
+    export let fields = [];
 
-    function getFields(n, changes) {
-        if (n == null) return [];
-
-        let fields = n.fields;
-        return Object.keys(fields).map((key) => {
-            let modified = changes[key];
-            if (modified)
-                return { key: key, value: modified, changed: true };
-            else
-                return { key: key, value: fields[key].value, changed: false };
+    export function applyChanges(changes) {
+        fields = fields.map((f) => {
+            if (changes.hasOwnProperty(f.key)) {
+                let newValue = changes[f.key];
+                if (newValue !== f.value) {
+                    return { key: f.key, value: newValue };
+                }
+            }
+            return f;
         });
     }
 
-    $: fields = getFields(note, fieldChanges);
-</script>
-
-<ul class="flex-grow-1">
-    {#each fields as field}
-        <li class="py-1 px-2 mb-1 me-2 {field.changed ? "bg-primary" : ""}">
-            <div class="label">{field.key}</div>
-            <div class="value">{@html field.value}</div>
-        </li>
-    {/each}
-</ul>
-
-<style>
-    ul {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-        overflow: auto;
+    export function clearChanges() {
+        setFieldsFromNote(note);
     }
 
-    li {
+    export function getChanges() {
+        let changes = {};
+        fields.filter(isChangedFromNote).map((f) => {
+            changes[f.key] = f.value;
+        });
+        return changes;
+    }
+
+    function setFieldsFromNote(n) {
+        if (n == null) return [];
+
+        let f = n.fields || {};
+        fields = Object.keys(f).map((key) => {
+            return { key: key, value: f[key].value };
+        });
+    }
+
+    function isChangedFromNote(field) {
+        return (
+            !note.fields.hasOwnProperty(field.key) ||
+            field.value !== note.fields[field.key].value
+        );
+    }
+
+    function checkForFieldChanges(fields) {
+        let hasChanges = fields.some(isChangedFromNote);
+        dispatch("fieldchange", { hasChanges: hasChanges });
+    }
+
+    $: setFieldsFromNote(note);
+    $: checkForFieldChanges(fields);
+</script>
+
+<div class="listContainer flex-grow-1">
+    <ul class="d-flex flex-column m-1 me-2 p-3">
+        {#each fields as field}
+            <li class="flex-shrink-1">
+                <div class="label">{field.key}</div>
+                <div
+                    bind:innerHTML={field.value}
+                    use:autoexpand
+                    contenteditable="true"
+                    class="mousetrap form-control flex-grow-1 value"
+                    type="text"
+                    placeholder="Empty Field..."
+                    aria-label="Empty Field..."
+                />
+            </li>
+        {/each}
+    </ul>
+</div>
+
+<style>
+    .listContainer {
+        overflow: auto;
+        overflow-x: hidden;
+    }
+
+    ul {
+        overflow: auto;
+        list-style-type: none;
+        padding: 10px;
+        margin: 10px;
         background-color: var(--card-color);
         border-radius: 5px;
     }
@@ -46,8 +95,16 @@
     }
 
     .value {
-        font-size: 1.2rem;
+        font-size: 1rem;
         list-style-type: initial;
         list-style-position: inside;
+        margin: 0;
+        height: auto;
+        overflow: hidden;
+        resize: none;        
+    }
+    .value:empty:not(:focus):before {
+        content: attr(placeholder);
+        color: #ffffff30;
     }
 </style>

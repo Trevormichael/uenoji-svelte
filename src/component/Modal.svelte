@@ -6,28 +6,23 @@
 
     const dispatch = createEventDispatcher();
 
-    let isOpen = false;
-
-    export function open() {
-        isOpen = true;
-    }
-
-    export function close() {
-        isOpen = false;
-        dispatch('close');
+    function onClickOutside() {
+        dispatch("clickoutside");
     }
 </script>
 
-{#if isOpen}
-    <!-- svelte-ignore a11y-autofocus -->
-    <div class="modal" tabindex={0} autofocus>
-        <div class="backdrop" on:click={close} />
+<!-- svelte-ignore a11y-autofocus -->
+<div class="modal" tabindex={0} autofocus>
+    <div class="backdrop" on:click={onClickOutside} />
 
-        <div in:slide={{ duration: 200 }} class="content container-fluid" style={contentStyle}>
-            <slot />
-        </div>
+    <div
+        in:slide={{ duration: 200 }}
+        class="content container-fluid"
+        style={contentStyle}
+    >
+        <slot />
     </div>
-{/if}
+</div>
 
 <style>
     div.modal {
