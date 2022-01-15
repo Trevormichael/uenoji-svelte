@@ -1,13 +1,30 @@
 <script>
-    export let term;
-    export let onExport;
+    import { createEventDispatcher } from "svelte";
+    import { getSelectionText } from "../../scripts/common";
+    const dispatch = createEventDispatcher();
 
-    function onExportClick() {
-        onExport(term);
+    export let term;
+    let li; 
+
+    const onExportClick = () => dispatch("export", {
+        term: term,
+        selection: getTextSelectionInChildren()
+    });
+
+    function getTextSelectionInChildren() {
+        var textHighlightNode = window.getSelection().anchorNode.parentNode
+        if (textHighlightNode != null) {
+            var closestLiToHighlight = textHighlightNode.closest('li')
+            if (closestLiToHighlight === li) {
+                return getSelectionText()
+            }
+        }
+        return null;
     }
+
 </script>
 
-<li class="pt-1 pb-2 px-2 mb-1 me-2">
+<li bind:this={li} class="pt-1 pb-2 px-2 mb-1 me-2">
     <div class="d-flex">
         <div class="flex-grow-1 align-baseline">
             <span class="align-baseline main">{term.term}</span>
@@ -17,7 +34,7 @@
         </div>
         <div class="flex-shrink-1 d-flex align-items-end">
             <button on:click={onExportClick} class="btn btn-primary float-end export-def me-1 mb-2"
-                ><i class="fa-solid fa-plus" />
+                ><i class="fa-solid fa-arrow-right" />
             </button>
         </div>
     </div>

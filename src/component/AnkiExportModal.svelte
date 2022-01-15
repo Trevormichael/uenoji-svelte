@@ -1,9 +1,11 @@
 <script>
     import { note, searchTerm as term } from "../stores";
+    import { get } from "svelte/store";
     import Modal from "./Modal.svelte";
     import AnkiNoteInfo from "./anki/AnkiNoteInfo.svelte";
-    import DictionarySearch from "./dict/DictionarySearch.svelte";
+    import TermList from "./dict/TermList.svelte";
     import SearchHistory from "./dict/SearchHistory.svelte";
+    import termexporter from "./dict/termexporter";
     import anki from "../scripts/anki-connect";
     import ankinote from "./anki/ankinote";
     import Mousetrap from "../lib/mousetrap.min.js";
@@ -26,12 +28,37 @@
         searchTerm(searchInput.value);
         searchInput.value = "";
     };
+
     const searchSelectionText = () => searchTerm(getSelectionText().trim());
+
+    const getNoteWithChanges = () => {
+        let n = get(note);
+        Object.keys(pendingChanges).forEach((key) => {
+            n.fields[key].value = pendingChanges[key];
+        });
+        return n;
+    };
+
+    const addTermToNote = async (event) => {
+        let term = event.detail.term;
+        let selection = event.detail.selection;
+        pendingChanges = await termexporter.mapTermToFieldChanges(
+            term,
+            selection,
+            getNoteWithChanges()
+        );
+    };
+
+    const exportChanges = async () => {
+        let id = get(note).noteId;
+        await anki.updateNoteFields(id, pendingChanges);
+        modal.close();
+    }
 
     export const open = async (noteId) => {
         modal.open();
         note.set(await anki.noteInfo(noteId));
-        ps.dispatchEvent('noteLoaded');
+        ps.dispatchEvent("noteLoaded");
         Mousetrap.bind("command+f", searchSelectionText);
     };
 
@@ -67,14 +94,21 @@
         </div>
         <div class="d-flex flex-row flex-grow-1 mainContent">
             <div class="d-flex flex-even me-1">
-                <DictionarySearch term={$term} />
+                <TermList term={$term} on:export={addTermToNote} />
             </div>
             <div class="d-flex flex-even ms-1">
-                <AnkiNoteInfo note={$note} />
+                <AnkiNoteInfo note={$note} fieldChanges={pendingChanges} />
             </div>
         </div>
         <div class="d-flex flex-shrink-1 mt-2">
-            <button class="btn btn-danger">Clear all changes</button>
+            <button
+                on:click={() => {
+                    pendingChanges = {};
+                }}
+                class="btn btn-danger"
+                ><i class="fa-solid fa-arrow-rotate-left me-2" />Clear all
+                changes</button
+            >
             <div class="d-flex flex-grow-1 justify-content-end">
                 <button
                     class="btn btn-secondary me-2"
@@ -82,7 +116,11 @@
                         modal.close();
                     }}>Cancel</button
                 >
-                <button class="btn btn-primary">Export changes</button>
+                <button 
+                on:click={exportChanges}
+                class="btn btn-primary"
+                    ><i class="fa-solid fa-share me-2" />Export changes</button
+                >
             </div>
         </div>
     </div>

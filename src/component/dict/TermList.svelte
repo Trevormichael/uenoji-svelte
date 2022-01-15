@@ -34,7 +34,7 @@
             </div>
         </li>
         {#each searchResultHeadingGroups[heading] as tr}
-            <TermItem term={tr} />
+            <TermItem term={tr} on:export/>
         {/each}
     {/each}
 </ul>

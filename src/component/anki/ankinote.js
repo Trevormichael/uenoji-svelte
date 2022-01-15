@@ -8,6 +8,12 @@ function getFieldValue(note, fieldName) {
     return null;
 }
 
+function getFields(note) {
+    return Object.keys(note.fields)
+        .map(key => { return { key: note.fields[key] }; })
+}
+
 export default {
-    getFieldValue
+    getFieldValue,
+    getFields
 }
