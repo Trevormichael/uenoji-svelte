@@ -71,6 +71,9 @@
         term.set(null);
         Mousetrap.unbind("command+f");
     };
+
+    $: hasPendingChanges = Object.keys(pendingChanges).length > 0;
+
 </script>
 
 <Modal bind:this={modal} on:close={onClose}>
@@ -120,6 +123,7 @@
                     }}>Cancel</button
                 >
                 <button 
+                disabled={!hasPendingChanges}
                 on:click={exportChanges}
                 class="btn btn-primary"
                     ><i class="fa-solid fa-share me-2" />Export changes</button

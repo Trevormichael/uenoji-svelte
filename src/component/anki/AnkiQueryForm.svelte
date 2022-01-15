@@ -1,30 +1,31 @@
 <script>
-    import { onMount } from "svelte";
+    import { onMount, onDestroy } from "svelte";
     import db from "../../data/db";
+    import Mousetrap from "../../lib/mousetrap.min.js";
 
     export let onQuery;
 
     let queryInput;
-    let hidePrevExports = false;
 
     async function runQuery() {
         let query = queryInput.value;
         queryInput.blur();
         await db.prefs.put({ key: "latestQuery", value: query });
-        await db.prefs.put({ key: "hidePrevExports", value: hidePrevExports });
         onQuery(query);
     }
 
     async function loadLastQuery() {
         let query = await db.prefs.get("latestQuery");
-        let hidePrev = await db.prefs.get("hidePrevExports");
         if (query != null) queryInput.value = query.value;
-        if (hidePrev != null) hidePrevExports = hidePrev.value;
     }
 
     onMount(() => {
         loadLastQuery();
+        Mousetrap.bind("command+e", runQuery);
     });
+    onDestroy(() => {
+        Mousetrap.unbind("command+e");
+    })
 </script>
 
 <div class="d-flex">
@@ -50,17 +51,4 @@
         class="btn btn-primary ms-2 flex-shrink-1"
         ><i class="fa-solid fa-magnifying-glass me-2" />Search</button
     >
-</div>
-<div class="d-flex">
-    <div class="form-check form-switch">
-        <input
-            bind:checked={hidePrevExports}
-            class="form-check-input"
-            type="checkbox"
-            id="hidePrevExports"
-        />
-        <label class="form-check-label" for="flexSwitchCheckDefault">
-            Hide previously exported notes
-        </label>
-    </div>
 </div>

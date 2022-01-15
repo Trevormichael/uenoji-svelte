@@ -21,6 +21,10 @@
         selectedNoteId = note.noteId;
         modal.open(selectedNoteId);
     }
+
+    function onExport() {
+        show("Note exported successfully", "success", 4000)
+    }
 </script>
 
 <div class="px-2 pt-2">
@@ -31,7 +35,7 @@
         <AnkiQueryForm onQuery={performQuery} />
     </div>
 </div>
-<div class="d-flex flex-shrink-1 py-1 p-2 mx-2" id="resultCount">
+<div class="d-flex flex-shrink-1 py-1 p-2 mx-2 mt-1" id="resultCount">
     <span>{notes.length} result{notes.length == 1 ? "" : "s"} found.</span>
 </div>
 <div class="d-flex flex-grow-1 pt-2 me-2 overflow-auto">
@@ -49,7 +53,7 @@
 </div>
 <AnkiExportModal
     bind:this={modal}
-    onExport={() => show("Note exported successfully", "success", 4000)}
+    onExport={onExport}
 />
 
 <style>
