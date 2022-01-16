@@ -1,7 +1,6 @@
 <script>
     import { searchTerm as term } from "../stores";
-    import { createEventDispatcher, onMount, onDestroy } from "svelte";
-    import { get } from "svelte/store";
+    import { createEventDispatcher, setContext, onMount, onDestroy } from "svelte";
     import Modal from "./Modal.svelte";
     import AnkiNoteInfo from "./anki/AnkiNoteInfo.svelte";
     import TermList from "./dict/TermList.svelte";
@@ -15,11 +14,14 @@
     
     const dispatch = createEventDispatcher();
 
+    setContext('exportModal', {
+        hasMapping: hasMapping
+    });
+
     export let note;
     export let onExport;
 
     let noteInfo;
-    let noteFields;
     let hasChanges;
 
     //bindings
@@ -31,6 +33,10 @@
         if (t != null && t.length > 0) term.set(t);
     }
 
+    async function hasMapping(sourceName) {
+        return await termexporter.hasMapping(note.modelName, sourceName)
+    }
+
     const searchTermFromSearchInput = () => {
         searchTerm(searchValue);
         searchValue = "";
@@ -39,12 +45,12 @@
     const searchSelectionText = () => searchTerm(getSelectionText().trim());
 
     const getNoteWithChanges = () => {
-        let n = note;
-        (noteFields || []).forEach(f => {
-            if (f.changed)
-                n.fields[f.key].value = f.value;
-        });
-        return n;
+        let noteCopy = JSON.parse(JSON.stringify(note));
+        let changes = noteInfo.getChanges();
+        Object.keys(changes).forEach(key => {
+            noteCopy.fields[key].value = changes[key];
+        })
+        return noteCopy;
     };
 
     const addTermToNote = async (event) => {
@@ -78,6 +84,7 @@
     });
     onDestroy(() => {
         term.set(null);
+        termexporter.clearCache();
         Mousetrap.unbind("command+f");
         Mousetrap.unbind("escape");
     });
@@ -112,7 +119,6 @@
             <div class="d-flex flex-even ms-1">
                 <AnkiNoteInfo
                     bind:this={noteInfo}
-                    bind:fields={noteFields}
                     on:fieldchange={onFieldChange}
                     note={note}
                 />

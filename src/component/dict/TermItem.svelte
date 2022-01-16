@@ -1,15 +1,22 @@
 <script>
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher, getContext } from "svelte";
     import { getSelectionText } from "../../scripts/common";
     const dispatch = createEventDispatcher();
 
     export let term;
+    let hasMapping;
     let li; 
+
+    const modalContext = getContext('exportModal');
 
     const onExportClick = () => dispatch("export", {
         term: term,
         selection: getTextSelectionInChildren()
     });
+
+    const checkForMapping = async(term) => {
+        hasMapping = await modalContext.hasMapping(term.dictName);
+    }
 
     function getTextSelectionInChildren() {
         var textHighlightNode = window.getSelection().anchorNode.parentNode
@@ -22,6 +29,8 @@
         return null;
     }
 
+    $: checkForMapping(term);
+
 </script>
 
 <li bind:this={li} class="pt-1 pb-2 px-2 mb-1 me-2">
@@ -33,7 +42,7 @@
             <div class="align-baseline dict mt-1">{term.dictName}</div>
         </div>
         <div class="flex-shrink-1 d-flex align-items-end">
-            <button on:click={onExportClick} class="btn btn-primary float-end export-def me-1 mb-2"
+            <button disabled={!hasMapping} on:click={onExportClick} class="btn btn-primary float-end export-def me-1 mb-2"
                 ><i class="fa-solid fa-arrow-right" />
             </button>
         </div>

@@ -1,23 +1,54 @@
 import db from "../../data/db";
 import ankinote from "../anki/ankinote";
+import { nullOrBlank } from "../../scripts/common"
 
-async function getMappingForNoteAndSourceType(noteType, sourceType) {
-    let mappings = await db.mappings.toArray();
-    return mappings.find(m => {
-        let notePattern = new RegExp(m.notePattern);
-        let dictPattern = new RegExp(m.dictPattern);
-        return notePattern.test(noteType) && dictPattern.test(sourceType);
+let mappings;
+
+async function getMappings() {
+    if (!mappings)
+        mappings = await db.mappings.toArray();
+    return mappings
+}
+
+function clearCache() {
+    mappings = null;
+}
+
+function testMapping(mapping, noteType, sourceType) {
+    let notePattern = new RegExp(mapping.notePattern);
+    let dictPattern = new RegExp(mapping.dictPattern);
+    return notePattern.test(noteType) && dictPattern.test(sourceType);
+}
+
+async function hasMapping(noteType, sourceType) {
+    return (await getMappings()).some(m => {
+        return testMapping(m, noteType, sourceType)
+    })
+}
+
+async function getMapping(noteType, sourceType) {
+    return (await getMappings()).find(m => {
+        return testMapping(m, noteType, sourceType)
     })
 }
 
 const mapTermToFieldChanges = async(term, selection, note) => {
-    let mapping = await getMappingForNoteAndSourceType(note.modelName, term.dictName);
+    let mapping = await getMapping(note.modelName, term.dictName);
+    if (mapping === null) return;
+
     let fnBody = mapping.script;
     if (selection) {
         term.defString = selection;
     }
     let fn = new Function("card", "source", fnBody);
     let modified = ankinote.getFields(note);
+    modified.append = (key, value) => {
+        if (nullOrBlank(modified[key])) {
+            modified[key] = value;
+        } else {
+            modified[key] = modified[key] + `<br>${value}`
+        }
+    }
     fn.call(null, modified, term);
     let changes = Object.keys(modified)
         .filter(key => {
@@ -30,5 +61,7 @@ const mapTermToFieldChanges = async(term, selection, note) => {
 };
 
 export default {
-    mapTermToFieldChanges
+    mapTermToFieldChanges,
+    hasMapping,
+    clearCache
 };

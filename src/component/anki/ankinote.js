@@ -9,8 +9,11 @@ function getFieldValue(note, fieldName) {
 }
 
 function getFields(note) {
-    return Object.keys(note.fields)
-        .map(key => { return { key: note.fields[key] }; })
+    let res = {};
+    Object.keys(note.fields).forEach(key => {
+        res[key] = note.fields[key].value;
+    })
+    return res;
 }
 
 export default {

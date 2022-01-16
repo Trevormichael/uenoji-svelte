@@ -45,3 +45,9 @@ export var partition = (xs, predicate) => {
     });
     return [part1, part2]
 }
+
+export function nullOrBlank(str) {
+    return str === undefined ||
+        str === null ||
+        str.trim() === ""
+}

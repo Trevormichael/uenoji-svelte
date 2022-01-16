@@ -1,9 +1,10 @@
 <script>
-    import { createEventDispatcher, onMount } from "svelte";
+    import { createEventDispatcher } from "svelte";
     const dispatch = createEventDispatcher();
 
     export let note;
-    export let fields = [];
+    
+    let fields = [];
 
     export function applyChanges(changes) {
         fields = fields.map((f) => {
