@@ -1,5 +1,6 @@
 <script>
-    import { slide } from "svelte/transition";
+    import { scale, fade } from "svelte/transition";
+    import { quintOut } from "svelte/easing";
     import { createEventDispatcher } from "svelte";
 
     export let contentStyle = "";
@@ -13,10 +14,10 @@
 
 <!-- svelte-ignore a11y-autofocus -->
 <div class="modal" tabindex={0} autofocus>
-    <div class="backdrop" on:click={onClickOutside} />
+    <div in:fade={{ duration: 100 }} class="backdrop" on:click={onClickOutside} />
 
     <div
-        in:slide={{ duration: 200 }}
+        in:scale={{ easing: quintOut, duration: 500 }}
         class="content container-fluid"
         style={contentStyle}
     >
