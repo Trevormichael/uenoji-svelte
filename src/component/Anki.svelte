@@ -51,11 +51,13 @@
 </div>
 
 {#if $selectedNote}
-<AnkiExportModal
-    note={$selectedNote}
-    onExport={onExport}
-    on:cancel={() => { selectedNote.set(null); }}
-/>
+    <AnkiExportModal
+        note={$selectedNote}
+        {onExport}
+        on:cancel={() => {
+            selectedNote.set(null);
+        }}
+    />
 {/if}
 
 <style>

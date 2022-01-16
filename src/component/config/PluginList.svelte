@@ -5,6 +5,7 @@
     import EditConfigModal from "./EditConfigModal.svelte";
     import pluginsystem from "../../plugin/pluginsystem";
     import { show } from "../toast/toast";
+    import { confirm } from "../modal/confirmation";
 
     let plugins = [];
     let selectedPlugin;
@@ -18,12 +19,22 @@
     }
 
     async function removePlugin(event) {
-        pluginsystem.deletePlugin(event.detail);
-        updatePluginList();
+        confirm(
+            "Are you sure you want to delete this plugin?",
+            "Delete",
+            () => {
+                pluginsystem.deletePlugin(event.detail);
+                updatePluginList();
+            }
+        );
     }
 
-    const configurePlugin = (event) => { selectedPlugin = event.detail; };
-    const onEditConfigCancel = () => { selectedPlugin = null; };
+    const configurePlugin = (event) => {
+        selectedPlugin = event.detail;
+    };
+    const onEditConfigCancel = () => {
+        selectedPlugin = null;
+    };
     const onEditConfigSuccess = () => {
         selectedPlugin = null;
         show("Plugin config updated.", "success", 3000);
