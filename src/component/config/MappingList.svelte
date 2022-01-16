@@ -41,7 +41,7 @@
     };
     const onEditSuccess = (event) => {
         let isNew = event.detail.isNew;
-        let message = isNew ? "Field mapping added." : "Field mapping edited.";
+        let message = isNew ? "Field mapping created." : "Field mapping updated.";
         show(message, "success", 3000);
         selectedMapping = null;
         updateMappingList();
