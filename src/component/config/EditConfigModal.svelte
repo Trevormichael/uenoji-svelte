@@ -41,6 +41,7 @@
             bind:value={configValue}
             use:allowTab
             class="form-control"
+            spellcheck="false"
             type="text"
             placeholder="JSON Configuration"
             rows="12"

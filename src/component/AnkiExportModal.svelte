@@ -99,6 +99,7 @@
             >
                 <input
                     bind:value={searchValue}
+                    spellcheck="false"
                     class="form-control"
                     type="text"
                     placeholder="Search..."

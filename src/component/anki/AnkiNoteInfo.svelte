@@ -67,6 +67,7 @@
                 <div
                     bind:innerHTML={field.value}
                     contenteditable="true"
+                    spellcheck="false"
                     class="mousetrap form-control flex-grow-1 value"
                     type="text"
                     placeholder="Empty Field..."

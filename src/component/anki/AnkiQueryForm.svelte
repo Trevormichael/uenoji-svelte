@@ -37,6 +37,7 @@
         <!-- svelte-ignore a11y-autofocus -->
         <input
             bind:this={queryInput}
+            spellcheck="false"
             class="form-control flex-grow-1"
             type="text"
             placeholder="Enter Search Query"
