@@ -4227,6 +4227,11 @@
     "core-util-is" "1.0.2"
     "extsprintf" "^1.2.0"
 
+"wanakana@^4.0.2":
+  "integrity" "sha512-lBFtnLJhTpp5wQBdH7TrOHhLxqmUabAfL86plNN8+iffyhosjZyx+kkO8KEBGR8zWH5nxSQ67oyx3W/lcEC8sg=="
+  "resolved" "https://registry.npmjs.org/wanakana/-/wanakana-4.0.2.tgz"
+  "version" "4.0.2"
+
 "wcwidth@^1.0.1":
   "integrity" "sha1-8LDc+RW8X/FSivrbLA4XtTLaL+g="
   "resolved" "https://registry.npmjs.org/wcwidth/-/wcwidth-1.0.1.tgz"

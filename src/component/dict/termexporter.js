@@ -1,6 +1,9 @@
 import db from "../../data/db";
 import ankinote from "../anki/ankinote";
 import { nullOrBlank } from "../../scripts/common"
+import { furigana } from "../../util/jpparser";
+
+const AsyncFunction = Object.getPrototypeOf(async function() {}).constructor;
 
 let mappings;
 
@@ -40,7 +43,7 @@ const mapTermToFieldChanges = async(term, selection, note) => {
     if (selection) {
         term.defString = selection;
     }
-    let fn = new Function("card", "source", fnBody);
+    let fn = new AsyncFunction("card", "source", fnBody);
     let modified = ankinote.getFields(note);
     modified.append = (key, value) => {
         if (nullOrBlank(modified[key])) {
@@ -49,7 +52,8 @@ const mapTermToFieldChanges = async(term, selection, note) => {
             modified[key] = modified[key] + `<br>${value}`
         }
     }
-    fn.call(null, modified, term);
+    term.furigana = (key) => { return furigana(term[key]); }
+    await fn.call(null, modified, term);
     let changes = Object.keys(modified)
         .filter(key => {
             return note.fields.hasOwnProperty(key) && note.fields[key].value !== modified[key]
