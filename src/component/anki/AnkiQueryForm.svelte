@@ -39,6 +39,7 @@
         <input
             bind:this={queryInput}
             bind:value={query}
+            spellcheck="false"
             class="form-control flex-grow-1"
             type="text"
             placeholder="Enter Search Query"

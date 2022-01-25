@@ -40,6 +40,7 @@
         <input
             bind:value={mapping.notePattern}
             class="form-control flex-grow-1"
+            spellcheck="false"
             type="text"
             placeholder="Note Type Pattern"
             aria-label="Note Type Pattern"
@@ -47,6 +48,7 @@
         <input
             bind:value={mapping.dictPattern}
             class="form-control flex-grow-1"
+            spellcheck="false"
             type="text"
             placeholder="Source Pattern"
             aria-label="Source Pattern"
@@ -55,6 +57,7 @@
         <textarea
             use:allowTab
             bind:value={mapping.script}
+            spellcheck="false"
             class="form-control"
             type="text"
             placeholder="Mapping script"
