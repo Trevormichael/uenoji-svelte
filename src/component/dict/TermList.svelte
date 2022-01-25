@@ -3,6 +3,7 @@
     import { groupBy } from "../../scripts/common";
     import { searchResults } from "../../stores";
     import TermItem from "./TermItem.svelte";
+    import ps from "../../plugin/pluginsystem"
 
     export let term;
     let searchResultsCache = {};
@@ -16,6 +17,7 @@
             Array.prototype.push.apply(searchResultsCache[term], res);
         }
         searchResults.set(searchResultsCache[term]);
+        ps.dispatchEvent("searchResultsLoaded")
     }
 
     $: if (term != null) search(term);

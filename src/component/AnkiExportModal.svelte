@@ -67,6 +67,8 @@
     const exportChanges = async () => {
         let id = note.noteId;
         let changes = noteInfo.getChanges();
+        if (Object.keys(changes).length === 0) return;
+
         await anki.updateNoteFields(id, changes);
         onExport();
     };
@@ -79,13 +81,15 @@
 
     onMount(() => {
         ps.dispatchEvent("noteLoaded")
-        Mousetrap.bind("command+f", searchSelectionText);
+        Mousetrap.bind("mod+f", searchSelectionText);
+        Mousetrap.bind(["mod+return", "mod+enter"], exportChanges);
         Mousetrap.bind("escape", dispatchCancel);
     });
     onDestroy(() => {
         term.set(null);
         termexporter.clearCache();
-        Mousetrap.unbind("command+f");
+        Mousetrap.unbind("mod+f");
+        Mousetrap.unbind(["mod+return", "mod+enter"])
         Mousetrap.unbind("escape");
     });
 </script>

@@ -8,8 +8,10 @@
     import { show } from "./toast/toast";
 
     let notes = [];
+    let query;
 
-    async function performQuery(query) {
+    async function performQuery() {
+        console.log(query)
         notes = await anki.queryNotes(query);
         if (notes.length == 1) {
             selectedNote.set(notes[0]);
@@ -24,6 +26,7 @@
     function onExport() {
         selectedNote.set(null);
         show("Note exported successfully", "success", 4000)
+        performQuery()
     }
 </script>
 
@@ -32,7 +35,7 @@
 </div>
 <div class="row flex-shrink-1 px-2">
     <div class="col-12">
-        <AnkiQueryForm onQuery={performQuery} />
+        <AnkiQueryForm bind:query={query} onQuery={performQuery} />
     </div>
 </div>
 <div class="d-flex flex-shrink-1 py-1 p-2 mx-2 mt-1" id="resultCount">

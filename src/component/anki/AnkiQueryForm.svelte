@@ -4,19 +4,20 @@
     import Mousetrap from "../../lib/mousetrap.min.js";
 
     export let onQuery;
+    export let query;
 
     let queryInput;
 
     async function runQuery() {
-        let query = queryInput.value;
         queryInput.blur();
         await db.prefs.put({ key: "latestQuery", value: query });
-        onQuery(query);
+        onQuery();
     }
 
     async function loadLastQuery() {
-        let query = await db.prefs.get("latestQuery");
-        if (query != null) queryInput.value = query.value;
+        let latestQuery = await db.prefs.get("latestQuery");
+        if (latestQuery != null) 
+            query = latestQuery.value;
     }
 
     onMount(() => {
@@ -37,6 +38,7 @@
         <!-- svelte-ignore a11y-autofocus -->
         <input
             bind:this={queryInput}
+            bind:value={query}
             class="form-control flex-grow-1"
             type="text"
             placeholder="Enter Search Query"

@@ -1,6 +1,6 @@
 import db from "../data/db";
 import {get } from 'svelte/store';
-import { selectedNote, searchTerm } from "../stores";
+import { selectedNote, searchTerm, searchResults } from "../stores";
 
 let loadedPlugins = {};
 let actions = {};
@@ -8,7 +8,8 @@ let listeners = {};
 
 const stores = {
     note: selectedNote,
-    searchTerm: searchTerm
+    searchTerm: searchTerm,
+    searchResults: searchResults
 };
 
 function registerAction(eventName, fn) {

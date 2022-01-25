@@ -18,20 +18,37 @@
 
     $: fields = getFields(note);
 
-    const onNoteSelect = () => dispatch("select", note)
+    const onNoteSelect = () => dispatch("select", note);
 </script>
 
-<li class="mx-2 mb-1 {active ? "bg-primary": ""}" on:click={onNoteSelect}>
-    <span class="modelName pb-1">{note.modelName}</span>
-    <div class="fields">{fields}</div>
-    <div class="noteId pt-1">Note Id: {note.noteId}</div>
+<li>
+    <button class="mx-2 mb-1 {active ? 'bg-primary' : ''}" on:click={onNoteSelect}>
+        <span class="modelName pb-1">{note.modelName}</span>
+        <div class="fields">{fields}</div>
+        <div class="noteId pt-1">Note Id: {note.noteId}</div>
+    </button>
 </li>
 
 <style>
     li {
+        margin: 0;
+        padding: 0;
+    }
+
+    button:focus, button:focus-visible {
+        background-color: var(--bs-primary);
+    }
+
+    button {
+        text-align: inherit;
         padding: 3px 10px 10px 10px;
         background-color: var(--card-color);
         border-radius: 10px;
+        margin: 0;
+        border: inherit;
+        outline: inherit;
+        color: inherit;
+        font: inherit;
     }
 
     li > * {
@@ -52,11 +69,11 @@
 
     .modelName {
         font-size: 0.8em;
-        color: #ffffffcc
+        color: #ffffffcc;
     }
 
     .noteId {
         font-size: 0.7em;
-        color: #ffffffcc
+        color: #ffffffcc;
     }
 </style>
